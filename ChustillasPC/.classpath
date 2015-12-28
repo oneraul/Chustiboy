@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="/Chustillas" combineaccessrules="false" />
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-controllers-desktop-natives.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-controllers-desktop.jar"/>
+	<classpathentry kind="lib" path="/Chustillas/libs/gdx.jar"/>
+</classpath>
