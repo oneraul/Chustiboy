@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Animation {
+public class AnimatedSprite {
 	private TextureRegion region;
 	private AnimationFrame[] frames;
 	private int current;
 	private float acumulator;
 	
-	public Animation(Texture texture) {
+	public AnimatedSprite(Texture texture) {
 		region = new TextureRegion(texture);
 	}
 	
@@ -28,7 +28,11 @@ public class Animation {
 	}
 	
 	public void draw(SpriteBatch batch, float x, float y) {
-		batch.draw(region, x-frames[current].originX, y-frames[current].originY, region.getRegionWidth(), region.getRegionHeight());
+		this.draw(batch, x, y, 1f);
+	}
+	
+	public void draw(SpriteBatch batch, float x, float y, float scale) {
+		batch.draw(region, x-frames[current].originX, y-frames[current].originY, region.getRegionWidth()*scale, region.getRegionHeight()*scale);
 	}
 	
 	public void setFrames(AnimationFrame[] frames) {
