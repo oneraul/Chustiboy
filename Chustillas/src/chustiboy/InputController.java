@@ -24,18 +24,22 @@ public class InputController {
 	
 	void W(boolean moving) {
 		pj.W = moving;
+		updateAnimation();
 	}
 	
 	void A(boolean moving) {
 		pj.A = moving;
+		updateAnimation();
 	}
 	
 	void S(boolean moving) {
 		pj.S = moving;
+		updateAnimation();
 	}
 	
 	void D(boolean moving) {
 		pj.D = moving;
+		updateAnimation();
 	}
 	
 	void notMoving() {
@@ -57,5 +61,9 @@ public class InputController {
 	
 	void menu() {
 		EventSystem.produceMessage("[MENU]", messagesQueue);
+	}
+	
+	void updateAnimation() {
+		pj.processAnimationDirection();
 	}
 }

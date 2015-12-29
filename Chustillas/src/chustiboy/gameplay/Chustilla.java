@@ -10,9 +10,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+
+import chustiboy.gameplay.AnimationData.Direction;
+import chustiboy.gameplay.ChustillaAnimationData.State;
 
 public class Chustilla implements Dibujable {
 	
@@ -20,26 +22,24 @@ public class Chustilla implements Dibujable {
 	private Vector2 pos, tmp;
 	public Vector2 dir;
 	public boolean W, A, S, D, isMoving;
-	public byte facing;
 	public String name;
 	private Color color;
 	public Rectangle collider;
 	private int hp;
-	private TextureRegion region;
-	private boolean dead;
+	public ChustillaAnimationData animationData;
+	private Animation animation;
+	private boolean dead, dying, attacking;
 	
-	private float scale = 0.75f;
 	private int size = 15;
 	
 	private float immunity_after_hit = 0.5f;
-	private float immunity_timer, v, animation_timer, animation_frame_duration;
+	private float immunity_timer, dying_timer, attack_timer, v; //animation_timer, animation_frame_duration;
 	
 	private Sound wilhelmScream, shootSound;
 
 	public Chustilla() {
 		v = 1.5f;
-		hp = 3;
-		dead = false;
+		hp = 25;
 		color = new Color(Color.WHITE);
 		pos = new Vector2();
 		tmp = new Vector2();
@@ -52,11 +52,9 @@ public class Chustilla implements Dibujable {
 		shootSound = Assets.sounds[0];
 		wilhelmScream = Assets.sounds[1];
 		
-		region = new TextureRegion(Assets.textures[5]);
-		region.setRegionWidth(Assets.textures[5].getWidth()/6);
-		region.setRegionHeight(Assets.textures[5].getHeight()/8);
-		face((byte)0);
-		animation_timer = animation_frame_duration = 0.15f;
+		animationData = new ChustillaAnimationData();
+		animation = new Animation(Assets.textures[5]);
+		animation.setFrames(animationData.getFrames());
 	}
 
 	public void setColor(float r, float g, float b) {
@@ -64,11 +62,33 @@ public class Chustilla implements Dibujable {
 	}
 	
 	public void update() {
-		// resetear el "parpadeo" de despues de recibir un golpe
-		if(immunity_timer > 0) {
-			immunity_timer -= Gdx.graphics.getDeltaTime();
-			if(immunity_timer <= 0) {
-				immunity_timer = 0;
+		
+		if(!dead) {
+			float dt = Gdx.graphics.getDeltaTime();
+			
+			// resetear el "parpadeo" de despues de recibir un golpe
+			if(immunity_timer > 0) {
+				immunity_timer -= dt;
+				if(immunity_timer <= 0) {
+					immunity_timer = 0;
+				}
+			}
+			
+			if(dying) {
+				dying_timer -= dt;
+				if(dying_timer <= 0) {
+					dying = false;
+					dead = true;
+					animation.setFrames(animationData.setState(State.dead));
+				}
+			}
+			
+			else if(attacking) {
+				attack_timer -= Gdx.graphics.getDeltaTime();
+				if(attack_timer <= 0) {
+					attacking = false;
+					processAnimationState();
+				}
 			}
 		}
 		
@@ -91,7 +111,7 @@ public class Chustilla implements Dibujable {
 	}
 	
 	public void movement(Network net) {
-		if(dead) return;
+		if(dead || dying) return;
 		
 		float a = 0, b = 0;
 
@@ -101,17 +121,28 @@ public class Chustilla implements Dibujable {
 		if(D) a++;
 
 		if(a == 0 && b == 0) {
+			if(isMoving){
+				isMoving = false;
+				processAnimationState();
+				
+			} else
+			
 			isMoving = false;
 			
 		} else {
-		
-			isMoving = true;
+			
+			if(!isMoving){
+				isMoving = true;
+				processAnimationState();
+				
+			} else isMoving = true;
+			
 			dir.set(a, b).nor();
 	
 			move(dir.x * v, 0);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
-					if(D) setPosition(muro.x - muro.w/2 - size/2, this.pos.y);
+					     if(D) setPosition(muro.x - muro.w/2 - size/2, this.pos.y);
 					else if(A) setPosition(muro.x + muro.w/2 + size/2, this.pos.y);
 				}
 			}
@@ -119,108 +150,61 @@ public class Chustilla implements Dibujable {
 	       	move(0, dir.y * v);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
-					if(W) setPosition(this.pos.x, muro.y - size);
+					     if(W) setPosition(this.pos.x, muro.y - size);
 					else if(S) setPosition(this.pos.x, muro.y + muro.h);
 				}
 			}
-			
-			face(dir.angle());
 		}
 		
 		//update the network
 		Packet_position p = new Packet_position();
-    	p.x = pos.x;
-    	p.y = pos.y;
-    	p.moving = isMoving;
-    	p.facing = facing;
-    	p.pj_id = Partida.pj_id;
+    	p.x 		= pos.x;
+    	p.y 		= pos.y;
+    	p.direction = animationData.getDirection();
+    	p.state		= animationData.getState();
+    	p.pj_id 	= Partida.pj_id;
     	net.sendUDP(p);
 	}
 	
-	private void face(float angle) {
-		switch((int)angle) {
-			case 0: 
-				face((byte)0);
-				break;
-			case 45: 
-				face((byte)1);
-				break;
-			case 90: 
-				face((byte)2);
-				break;
-			case 135: 
-				face((byte)3);
-				break;
-			case 180: 
-				face((byte)4);
-				break;
-			case 225: 
-				face((byte)5);
-				break;
-			case 270: 
-				face((byte)6);
-				break;
-			case 315: 
-				face((byte)7);
-				break;
-		}
-	}
-	
-	public void face(byte direction) {
-		facing = direction;
+	public void processAnimationDirection() {
 		
-		switch(direction) {
-			case 0: 
-				region.setV(2f/8);
-				region.setV2(3f/8);
-				break;
-			case 1: 
-				region.setV(7f/8);
-				region.setV2(8f/8);
-				break;
-			case 2: 
-				region.setV(3f/8);
-				region.setV2(4f/8);
-				break;
-			case 3: 
-				region.setV(6f/8);
-				region.setV2(7f/8);
-				break;
-			case 4: 
-				region.setV(1f/8);
-				region.setV2(2f/8);
-				break;
-			case 5: 
-				region.setV(4f/8);
-				region.setV2(5f/8);
-				break;
-			case 6: 
-				region.setV(0f/8);
-				region.setV2(1f/8);
-				break;
-			case 7: 
-				region.setV(5f/8);
-				region.setV2(6f/8);
-				break;
+		if(W) {
+			if(D) 		animationData.setDirection(Direction.northEast);
+			else if(A) 	animationData.setDirection(Direction.northWest);
+			else 		animationData.setDirection(Direction.north);
 		}
+		else if(S) {
+			if(D) 		animationData.setDirection(Direction.southEast);
+			else if(A) 	animationData.setDirection(Direction.southWest);
+			else 		animationData.setDirection(Direction.south);
+		}
+		else if(D) 		animationData.setDirection(Direction.east);
+		else if(A) 		animationData.setDirection(Direction.west);
+		
+		if(!dying && !dead)
+			animation.setFrames(animationData.getFrames());
 	}
 	
-	private void animate() {
-		if(isMoving) {
-			animation_timer -= Gdx.graphics.getDeltaTime();
-			if(animation_timer <= 0) {
-				animation_timer += animation_frame_duration;
-				float u = region.getU() + 1f/6;
-				if(u + 1f/6 > 1f) u = 0;
-
-				region.setU(u);
-				region.setU2(u + 1f/6);
-			}
-		}
-		else {
-			region.setU(1f/6);
-			region.setU2(2f/6);
-		}
+	public void processAnimationState() {
+		
+		if(dead) 		   animationData.setState(State.dead);
+		else if(dying) 	   animationData.setState(State.dying);
+		else if(attacking) animationData.setState(State.attack);
+		else if(isMoving)  animationData.setState(State.walk);
+		else 			   animationData.setState(State.idle);
+		
+		if(!dying && !dead)
+			animation.setFrames(animationData.getFrames());
+	}
+	
+	public void processNetworkAnimation(Packet_position p) {
+		if(p.state     != animationData.getState()
+		|| p.direction != animationData.getDirection())
+		{
+			animationData.setState(p.state);
+			animationData.setDirection(p.direction);
+			animation.setFrames(animationData.getFrames());
+		}	
 	}
 	
 	@Override
@@ -230,9 +214,9 @@ public class Chustilla implements Dibujable {
 	
 	@Override
 	public void draw(SpriteBatch batch) {
-		animate();
+		animation.animate();
 		batch.setColor(color);
-		batch.draw(region, pos.x-region.getRegionWidth()/2, pos.y, 0, 0, region.getRegionWidth(), region.getRegionHeight(), scale, scale, 0);
+		animation.draw(batch, pos.x, pos.y+size/2);
 		batch.setColor(Color.WHITE);
 		
 		if(GameOptions.debug) collider.debug(batch);
@@ -254,21 +238,19 @@ public class Chustilla implements Dibujable {
 		flechas.add(flecha);
 		
 		shootSound.play(Assets.volume);
+		
+		//animation
+		attacking = true;
+		attack_timer = 0.2f;
+		processAnimationState();
 	}
 	
 	public void hit() {
 		if(immunity_timer == 0) {
 			immunity_timer = immunity_after_hit;
 
-			System.out.println(this.name + ": Aaaaagh!");
 			hp--;
-			
-			// muere
-			if(hp <= 0) {
-				//dead = true;
-				//W = A = S = D = false;
-				wilhelmScream.play(Assets.volume);
-			}
+			if(hp <= 0) die();
 		}
 	}
 	
@@ -291,6 +273,20 @@ public class Chustilla implements Dibujable {
 	
 	public Vector2 getPosition() {
 		return tmp.set(pos);
+	}
+	
+	public void die() {
+		
+		// TODO debería mandar un paquete actualizando a los demás
+		
+		if(!dying && !dead) {
+			attacking = false;
+			dying = true;
+			dying_timer = 1.475f;
+			animation.setFrames(animationData.setState(State.dying));
+			
+			wilhelmScream.play(Assets.volume);
+		}
 	}
 }
 

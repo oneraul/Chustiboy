@@ -32,7 +32,7 @@ public class Assets {
 			new Texture("assets/boss.png"),
 			new Texture("assets/deadboss.png"),
 			sueloFuego(),
-			new Texture("assets/spritesheet.png"),
+			new Texture("assets/ranger_a.png"),
 			new Texture("assets/bonus_2.png")
 		};
 		

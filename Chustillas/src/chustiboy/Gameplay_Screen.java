@@ -252,8 +252,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		if(o instanceof Packet_position) {
 			Packet_position p = (Packet_position)o;
 			Partida.chustillas.get(p.pj_id).setPosition(p.x, p.y);
-			Partida.chustillas.get(p.pj_id).isMoving = p.moving;
-			Partida.chustillas.get(p.pj_id).face(p.facing);
+			Partida.chustillas.get(p.pj_id).processNetworkAnimation(p);
 		}
 		
 		else if(o instanceof Packet_shoot) {
