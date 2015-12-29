@@ -18,10 +18,10 @@ public class StageSnorlax extends Nivel{
 		spawn_x = width / 2;
 		spawn_y =  height / 4;
 		
-		muros.add(new Muro(width/2,      0, width, 10));
-		muros.add(new Muro(width/2, height, width, 10));
-		muros.add(new Muro(      0,      0,    10, height + 10));
-		muros.add(new Muro(  width,      0,    10, height + 10));
+		muros.add(new Muro(width/2,      0, width, 20));
+		muros.add(new Muro(width/2, height, width, 20));
+		muros.add(new Muro(      0,      0,    20, height + 10));
+		muros.add(new Muro(  width,      0,    20, height + 10));
 		
 		BigBigMaloMaloso boss = new BigBigMaloMaloso(net);
 		boss.setPosition(width/2, height/2);
