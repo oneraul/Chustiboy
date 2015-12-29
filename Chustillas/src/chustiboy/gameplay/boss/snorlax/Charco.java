@@ -2,7 +2,6 @@ package chustiboy.gameplay.boss.snorlax;
 
 import chustiboy.Assets;
 import chustiboy.Partida;
-import chustiboy.gameplay.AnimatedSprite;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.ParticleSystem;
 import chustiboy.gameplay.Rectangle;
@@ -14,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Charco implements Dibujable, Poolable {
 	
 	Rectangle collider;
-	AnimatedSprite sprite;
+	LavaSprite sprite;
 	ParticleSystem particleSystem;
 	boolean drawing = false, activated;
 	private float a;
@@ -25,7 +24,7 @@ public class Charco implements Dibujable, Poolable {
 		particleSystem = new ParticleSystem.Builder(x, y, width, height)
 			.max_particles(width * 2).initial_particle_size(4f).build();
 		
-		sprite = new AnimatedSprite(Assets.textures[4], width, height, 3, 0.10f);
+		sprite = new LavaSprite(Assets.textures[4], width, height, 3, 0.10f);
 		sprite.setPosition(x, y);
 		sprite.setAlpha(0);
 		

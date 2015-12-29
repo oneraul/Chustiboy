@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 
 import chustiboy.Assets;
 import chustiboy.Partida;
-import chustiboy.gameplay.AnimatedSprite;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.Dibujable;
 import chustiboy.gameplay.Rectangle;
@@ -15,7 +14,7 @@ import chustiboy.gameplay.Rectangle;
 public class Casita implements Dibujable {
 	
 	Array<Rectangle> suelo;
-	AnimatedSprite lava;
+	LavaSprite lava;
 	boolean active;
 	float duracion, timer;
 	int centroWidth = 300, centroHeight = 260;
@@ -23,7 +22,7 @@ public class Casita implements Dibujable {
 	
 	Casita() {
 		duracion = 10;
-		lava = new AnimatedSprite(Assets.textures[4], 0, 0, 3, 0.10f);
+		lava = new LavaSprite(Assets.textures[4], 0, 0, 3, 0.10f);
 		lava.setAlpha(0.75f);
 		suelo = new Array<>();
 		centroWidth = 300;
