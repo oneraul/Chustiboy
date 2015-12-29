@@ -32,11 +32,14 @@ public class Assets {
 			new Texture("assets/boss.png"),
 			new Texture("assets/deadboss.png"),
 			sueloFuego(),
-			new Texture("assets/spritesheet.png")
+			new Texture("assets/spritesheet.png"),
+			new Texture("assets/bonus_2.png")
 		};
 		
 		whitePixel = textures[0];
 		greenPixel = textures[1];
+		
+		textures[6].setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		
 		sounds = new Sound[] {
 			Gdx.audio.newSound(Gdx.files.internal("assets/arrow.wav")),
