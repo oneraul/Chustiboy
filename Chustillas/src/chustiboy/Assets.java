@@ -33,7 +33,8 @@ public class Assets {
 			new Texture("assets/deadboss.png"),
 			sueloFuego(),
 			new Texture("assets/ranger_a.png"),
-			new Texture("assets/bonus_2.png")
+			new Texture("assets/bonus_2.png"),
+			new Texture("assets/arrow.png")
 		};
 		
 		whitePixel = textures[0];

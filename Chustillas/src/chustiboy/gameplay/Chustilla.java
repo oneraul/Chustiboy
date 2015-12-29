@@ -27,10 +27,11 @@ public class Chustilla implements Dibujable {
 	public Rectangle collider;
 	private int hp;
 	public ChustillaAnimationData animationData;
-	private Animation animation;
+	private AnimatedSprite animation;
 	private boolean dead, dying, attacking;
 	
 	private int size = 15;
+	private float scale = 1.5f;
 	
 	private float immunity_after_hit = 0.5f;
 	private float immunity_timer, dying_timer, attack_timer, v; //animation_timer, animation_frame_duration;
@@ -38,7 +39,7 @@ public class Chustilla implements Dibujable {
 	private Sound wilhelmScream, shootSound;
 
 	public Chustilla() {
-		v = 1.5f;
+		v = 2.3f;
 		hp = 25;
 		color = new Color(Color.WHITE);
 		pos = new Vector2();
@@ -53,7 +54,7 @@ public class Chustilla implements Dibujable {
 		wilhelmScream = Assets.sounds[1];
 		
 		animationData = new ChustillaAnimationData();
-		animation = new Animation(Assets.textures[5]);
+		animation = new AnimatedSprite(Assets.textures[5]);
 		animation.setFrames(animationData.getFrames());
 	}
 
@@ -216,7 +217,7 @@ public class Chustilla implements Dibujable {
 	public void draw(SpriteBatch batch) {
 		animation.animate();
 		batch.setColor(color);
-		animation.draw(batch, pos.x, pos.y+size/2);
+		animation.draw(batch, pos.x-size/2, pos.y+size/4, scale);
 		batch.setColor(Color.WHITE);
 		
 		if(GameOptions.debug) collider.debug(batch);
@@ -234,7 +235,7 @@ public class Chustilla implements Dibujable {
 		
 		Flecha flecha = Flecha.pool.get(Flecha.pool.size-1);
 		Flecha.pool.removeIndex(Flecha.pool.size-1);
-		flecha.init(new Vector2(pos).add(0, size/2), dir);
+		flecha.init(new Vector2(pos).add(0, size/2), dir, animationData.getDirection());
 		flechas.add(flecha);
 		
 		shootSound.play(Assets.volume);
