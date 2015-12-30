@@ -46,14 +46,26 @@ public class BigBigMaloMaloso extends Boss {
 			ia = new IA(this);
 		}
 		
-		pos = new Vector2();
 		sprite = new ESPRAIT(Assets.textures[2], size, size);
 		dead = false;
 		
-		colliders = new Array<>();
-		colliders.add(new Rectangle(pos, (int)(size * 0.5f), (int)(size * 0.8f), 0, (int)(size * 0.1f)));
-		colliders.add(new Rectangle(pos, (int)(size * 0.9f), (int)(size * 0.4f), 0, (int)(size * 0.2f)));
+		// colliders
 
+		Rectangle pataDerecha   = new Rectangle(pos, 25, 20,  37, 5);
+		Rectangle pataIzquierda = new Rectangle(pos, 25, 20, -43, 5);
+		Rectangle cuerpoAncho   = new Rectangle(pos, (int)(size * 0.9f), (int)(size * 0.4f), 0, (int)(size * 0.2f));
+		Rectangle cuerpoAlto    = new Rectangle(pos, (int)(size * 0.5f), (int)(size * 0.8f), 0, (int)(size * 0.1f));
+		
+		movementColliders.add(pataDerecha);
+		movementColliders.add(pataIzquierda);
+		
+		hitColliders.addAll(movementColliders);
+		hitColliders.add(cuerpoAlto);
+		hitColliders.add(cuerpoAncho);
+		
+		
+		// ataques
+		
 		stomp = new Stomp(size);
 		
 		trons = new Tron[Partida.chustillas.size];
@@ -92,14 +104,14 @@ public class BigBigMaloMaloso extends Boss {
 	public void die() {
 		sprite.setTexture(Assets.textures[3]);
 		
-		for(Collider collider : colliders) {
+		for(Collider collider : hitColliders) {
 			for(Flecha flecha : collider.flechas) {
 				flecha.dead = true;
 			}
 			Flecha.pool.addAll(collider.flechas);
 		}
-		colliders.clear();
-		colliders.add(new Rectangle(pos, size, size));
+		hitColliders.clear();
+		hitColliders.add(new Rectangle(pos, size, size));
 		dead = true;
 		
 		if(ia != null) {
@@ -115,7 +127,7 @@ public class BigBigMaloMaloso extends Boss {
 	@Override
 	public void update() {
 		
-		for(Collider collider : colliders) {
+		for(Collider collider : hitColliders) {
 			collider.recoger_flechas();
 		}
 
@@ -123,8 +135,8 @@ public class BigBigMaloMaloso extends Boss {
 			Chustilla chustilla = Partida.chustillas.get(pj);
 			if(chustilla.flechas.size == 0) continue;
 			
-			for(int c = this.colliders.size-1; c >= 0; c--) {
-				Collider collider = this.colliders.get(c);
+			for(int c = this.hitColliders.size-1; c >= 0; c--) {
+				Collider collider = this.hitColliders.get(c);
 				
 				Flecha flecha;
 				for(int f = chustilla.flechas.size-1; f >= 0; f--) {
@@ -170,7 +182,7 @@ public class BigBigMaloMaloso extends Boss {
 		sprite.draw(batch);
 		
 		if(GameOptions.debug) {
-			for(Collider collider : colliders) {
+			for(Collider collider : hitColliders) {
 				collider.debug(batch);
 			}
 		}

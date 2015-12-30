@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 
 import chustiboy.gameplay.AnimationData.Direction;
 import chustiboy.gameplay.ChustillaAnimationData.State;
+import chustiboy.gameplay.boss.Boss;
 
 public class Chustilla implements Dibujable {
 	
@@ -140,6 +141,7 @@ public class Chustilla implements Dibujable {
 			
 			dir.set(a, b).nor();
 	
+			// horizontal movement
 			move(dir.x * v, 0);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
@@ -147,12 +149,29 @@ public class Chustilla implements Dibujable {
 					else if(A) setPosition(muro.x + muro.w/2 + size/2, this.pos.y);
 				}
 			}
+			for(Boss boss : Partida.bosses) {
+				for(Rectangle bossCollider : boss.movementColliders) {
+					if(bossCollider.collide(collider)) {
+						     if(D) setPosition(bossCollider.pos.x - bossCollider.w - size/2, this.pos.y);
+						else if(A) setPosition(bossCollider.pos.x + bossCollider.w + size/2, this.pos.y);
+					}
+				}
+			}
 	
+			// vertical movement
 	       	move(0, dir.y * v);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
 					     if(W) setPosition(this.pos.x, muro.y - size);
 					else if(S) setPosition(this.pos.x, muro.y + muro.h);
+				}
+			}
+			for(Boss boss : Partida.bosses) {
+				for(Rectangle bossCollider : boss.movementColliders) {
+					if(bossCollider.collide(collider)) {
+					         if(W) setPosition(this.pos.x, bossCollider.pos.y - size);
+						else if(S) setPosition(this.pos.x, bossCollider.pos.y + bossCollider.h);
+					}
 				}
 			}
 		}
