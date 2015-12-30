@@ -12,12 +12,12 @@ public class ChustillaAnimationData extends AnimationData {
 	}
 	
 	private AnimationFrame[][][] stuff;
-	private byte direction, state;
+	private byte state;
 	
-	ChustillaAnimationData() {
+	public ChustillaAnimationData() {
 		int size = 24;
 		int originX = 12;
-		int originY = 10;
+		int originY = 7;
 		direction = Direction.east;
 		state = State.idle;
 		
@@ -207,10 +207,6 @@ public class ChustillaAnimationData extends AnimationData {
 	public AnimationFrame[] setState(byte state) {
 		this.state = state;
 		return getFrames();
-	}
-	
-	byte getDirection() {
-		return direction;
 	}
 	
 	byte getState() {

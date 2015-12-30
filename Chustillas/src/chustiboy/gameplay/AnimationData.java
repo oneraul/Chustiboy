@@ -14,6 +14,12 @@ public abstract class AnimationData {
 		southEast = 7;
 	}
 	
+	protected byte direction;
+	
+	public byte getDirection() {
+		return direction;
+	}
+	
 	abstract AnimationFrame[] getFrames();
 	abstract AnimationFrame[] setDirection(byte direction);
 }
