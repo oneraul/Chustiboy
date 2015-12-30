@@ -217,7 +217,7 @@ public class Chustilla implements Dibujable {
 	public void draw(SpriteBatch batch) {
 		animation.animate();
 		batch.setColor(color);
-		animation.draw(batch, pos.x-size/2, pos.y+size/4, scale);
+		animation.draw(batch, pos.x, pos.y, scale);
 		batch.setColor(Color.WHITE);
 		
 		if(GameOptions.debug) collider.debug(batch);
@@ -235,7 +235,7 @@ public class Chustilla implements Dibujable {
 		
 		Flecha flecha = Flecha.pool.get(Flecha.pool.size-1);
 		Flecha.pool.removeIndex(Flecha.pool.size-1);
-		flecha.init(new Vector2(pos).add(0, size/2), dir, animationData.getDirection());
+		flecha.init(pos, dir, animationData.getDirection());
 		flechas.add(flecha);
 		
 		shootSound.play(Assets.volume);
