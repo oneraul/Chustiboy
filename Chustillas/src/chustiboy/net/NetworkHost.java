@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import chustiboy.Assets;
 import chustiboy.EventSystem;
-import chustiboy.Lobby_Screen;
 import chustiboy.Partida;
 import chustiboy.Player;
 import chustiboy.net.packets.Packet_color;
@@ -27,8 +26,7 @@ public class NetworkHost extends Network {
 	Server server;
 	private short number_of_players, ready_players;
 	
-	public NetworkHost(final Lobby_Screen lobby) throws IOException {
-		super(lobby);
+	public NetworkHost() throws IOException {
 		
 		server = new Server();
 		endpoint = server;

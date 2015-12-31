@@ -14,8 +14,7 @@ public class NetworkClient extends Network {
 	
 	private Client client;
 	
-	public NetworkClient(final Lobby_Screen lobby, String ip) throws IOException {
-		super(lobby);
+	public NetworkClient(String ip) throws IOException {
 		
 		client = new Client();
 		endpoint = client;

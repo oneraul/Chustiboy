@@ -17,12 +17,8 @@ public abstract class Network {
 	protected EndPoint endpoint;
 	public Listener lobby_listener, gameplay_listener;
 	public Partida partida;
-	protected Lobby_Screen lobby;
+	public Lobby_Screen lobby;
 	public Gameplay_Screen gameplay; // init in Gameplay_Screen#constructor
-	
-	Network(Lobby_Screen lobby) {
-		this.lobby = lobby;
-	}
 	
 	protected void registerPackets(EndPoint endpoint) {
 		endpoint.getKryo().register(String.class);
