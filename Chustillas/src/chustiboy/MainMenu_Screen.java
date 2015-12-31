@@ -6,6 +6,7 @@ import org.ipify.Ipify;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -42,6 +43,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		create_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				status.setColor(Color.WHITE);
 				status.setText("Creando servidor...");
 				
 				Lobby_Screen lobby = new Lobby_Screen();
@@ -51,6 +53,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 						try {
 							lobby.net = new NetworkHost();
 						} catch(IOException e) {
+							status.setColor(Color.RED);
 							status.setText("Error al crear el servidor");
 							return;
 						}
@@ -79,6 +82,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		join_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				status.setColor(Color.WHITE);
 				status.setText("Conectando...");
 				
 				Lobby_Screen lobby = new Lobby_Screen();
@@ -88,6 +92,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 						try {
 							lobby.net = new NetworkClient(ip_textfield.getText());
 						} catch(IOException e) {
+							status.setColor(Color.RED);
 							status.setText("Error al conectar");
 							return;
 						}
