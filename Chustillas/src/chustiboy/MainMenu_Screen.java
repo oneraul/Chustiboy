@@ -46,7 +46,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 				status.setColor(Color.WHITE);
 				status.setText("Creando servidor...");
 				
-				Lobby_Screen lobby = new Lobby_Screen();
+				final Lobby_Screen lobby = new Lobby_Screen();
 				new Thread() {
 					@Override
 					public void run() {
@@ -85,7 +85,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 				status.setColor(Color.WHITE);
 				status.setText("Conectando...");
 				
-				Lobby_Screen lobby = new Lobby_Screen();
+				final Lobby_Screen lobby = new Lobby_Screen();
 				new Thread() {
 					@Override
 					public void run() {
