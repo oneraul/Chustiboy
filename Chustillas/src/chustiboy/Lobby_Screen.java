@@ -68,6 +68,10 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		exit_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
+				exit_button.setDisabled(true);
+				ready_button.setDisabled(true);
+				stage_button.setDisabled(true);
+				
 				if(net instanceof NetworkHost) {
 					net.sendTCP("[EXIT]");
 				}
