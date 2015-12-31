@@ -39,15 +39,15 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		
 		status = new VisLabel();
 
-		VisTextButton create_button = new VisTextButton("Crear partida");
+		final VisTextButton create_button = new VisTextButton("Crear partida");
 
 		final VisTextField ip_textfield = new VisTextField();
 		ip_textfield.setText("localhost");
 		ip_textfield.setMessageText("IP del server");
 
-		VisTextButton join_button = new VisTextButton("Unirse");
+		final VisTextButton join_button = new VisTextButton("Unirse");
 		
-		VisTextButton exit_game_button = new VisTextButton("Salir del juego");
+		final VisTextButton exit_game_button = new VisTextButton("Salir del juego");
 		exit_game_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -67,7 +67,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		name_textfield.setMessageText("nombre");
 		name_textfield.setText(Assets.preferences.getString("name"));
 
-		VisTextButton name_button = new VisTextButton("guardar");
+		final VisTextButton name_button = new VisTextButton("guardar");
 		name_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
