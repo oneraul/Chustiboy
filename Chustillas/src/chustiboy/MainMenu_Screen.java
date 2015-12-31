@@ -40,71 +40,12 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		status = new VisLabel();
 
 		VisTextButton create_button = new VisTextButton("Crear partida");
-		create_button.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				status.setColor(Color.WHITE);
-				status.setText("Creando servidor...");
-				
-				final Lobby_Screen lobby = new Lobby_Screen();
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							lobby.net = new NetworkHost();
-						} catch(IOException e) {
-							status.setColor(Color.RED);
-							status.setText("Error al crear el servidor");
-							return;
-						}
-		
-						lobby.net.lobby = lobby;
-						
-						((NetworkHost)lobby.net).addMyPlayer();
-						lobby.stage_button.setDisabled(false);
-						try {
-							lobby.server_ip_label.setText(Ipify.getPublicIp());
-						} catch(IOException e) {
-							lobby.server_ip_label.setText("Error: no se puede mostrar la ip\nEstas conectado a internet?");
-						}
-						
-						EventSystem.produceMessage(lobby, messagesQueue);
-					}
-				}.start();
-			}
-		});
 
 		final VisTextField ip_textfield = new VisTextField();
 		ip_textfield.setText("localhost");
 		ip_textfield.setMessageText("IP del server");
 
 		VisTextButton join_button = new VisTextButton("Unirse");
-		join_button.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				status.setColor(Color.WHITE);
-				status.setText("Conectando...");
-				
-				final Lobby_Screen lobby = new Lobby_Screen();
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							lobby.net = new NetworkClient(ip_textfield.getText());
-						} catch(IOException e) {
-							status.setColor(Color.RED);
-							status.setText("Error al conectar");
-							return;
-						}
-		
-						lobby.net.lobby = lobby;
-						lobby.server_ip_label.setText(ip_textfield.getText());
-						
-						EventSystem.produceMessage(lobby, messagesQueue);
-					}
-				}.start();
-			}
-		});
 		
 		VisTextButton exit_game_button = new VisTextButton("Salir del juego");
 		exit_game_button.addListener(new ClickListener() {
@@ -137,6 +78,82 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 		
 		layout.add(name_textfield).fillX().padTop(50);
 		layout.add(name_button).padTop(50);
+		
+		create_button.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				status.setColor(Color.WHITE);
+				status.setText("Creando servidor...");
+				create_button.setDisabled(true);
+				join_button.setDisabled(true);
+				ip_textfield.setDisabled(true);
+				name_textfield.setDisabled(true);
+				name_button.setDisabled(true);
+				
+				final Lobby_Screen lobby = new Lobby_Screen();
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							lobby.net = new NetworkHost();lobby.net.lobby = lobby;
+							((NetworkHost)lobby.net).addMyPlayer();
+							lobby.stage_button.setDisabled(false);
+							try {
+								lobby.server_ip_label.setText(Ipify.getPublicIp());
+							} catch(IOException e) {
+								lobby.server_ip_label.setText("Error: no se puede mostrar la ip\nEstas conectado a internet?");
+							}
+							EventSystem.produceMessage(lobby, messagesQueue);
+							
+						} catch(IOException e) {
+							status.setColor(Color.RED);
+							status.setText("Error al crear el servidor");
+						}
+						
+						create_button.setDisabled(false);
+						join_button.setDisabled(false);
+						ip_textfield.setDisabled(false);
+						name_textfield.setDisabled(false);
+						name_button.setDisabled(false);
+					}
+				}.start();
+			}
+		});
+		
+		join_button.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				status.setColor(Color.WHITE);
+				status.setText("Conectando...");
+				create_button.setDisabled(true);
+				join_button.setDisabled(true);
+				ip_textfield.setDisabled(true);
+				name_textfield.setDisabled(true);
+				name_button.setDisabled(true);
+				
+				final Lobby_Screen lobby = new Lobby_Screen();
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							lobby.net = new NetworkClient(ip_textfield.getText());
+							lobby.net.lobby = lobby;
+							lobby.server_ip_label.setText(ip_textfield.getText());
+							EventSystem.produceMessage(lobby, messagesQueue);
+						} catch(IOException e) {
+							status.setColor(Color.RED);
+							status.setText("Error al conectar");
+						}
+		
+						create_button.setDisabled(false);
+						join_button.setDisabled(false);
+						ip_textfield.setDisabled(false);
+						name_textfield.setDisabled(false);
+						name_button.setDisabled(false);
+					}
+				}.start();
+			}
+		});
 	}
 	
 	@Override
