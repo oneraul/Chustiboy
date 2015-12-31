@@ -158,12 +158,6 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		TheGAME.pushScreen(new Gameplay_Screen(net));
 	}
 	
-	private void exitToMainMenu() {
-		Partida.pj_id = -1;
-		net.close();
-		TheGAME.popScreen();
-	}
-	
 	public String getPlayerID() {
 		return playerID;
 	}
@@ -241,6 +235,9 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 				case "[EXIT]":
 					exitToMainMenu();
 					break;
+				case "[POPSCREEN]":
+					TheGAME.popScreen();
+					break;
 					
 				case "[DISCONNECTED]":
 					// TODO replace by ConfirmDialog
@@ -263,5 +260,18 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		else if(o instanceof Packet_set_pj_id) {
 			Partida.pj_id = ((Packet_set_pj_id)o).pj_id;
 		}
+	}
+	
+	private void exitToMainMenu() {
+		Partida.pj_id = -1;
+		server_ip_label.setText("saliendo de la partida...");
+		
+		new Thread() {
+			@Override
+			public void run() {
+				net.close();
+				EventSystem.produceMessage("[POPSCREEN]", messagesQueue);
+			}
+		}.start();
 	}
 }
