@@ -1,14 +1,10 @@
 package chustiboy;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ipify.Ipify;
-
 import chustiboy.EventSystem.EventConsumer;
 import chustiboy.gameplay.stage.*;
-import chustiboy.net.NetworkClient;
 import chustiboy.net.NetworkHost;
 import chustiboy.net.packets.Packet_color;
 import chustiboy.net.packets.Packet_current_stage;
@@ -31,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.kotcrab.vis.ui.util.dialog.DialogUtils;
 import com.kotcrab.vis.ui.widget.VisImage;
+import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import chustiboy.net.*;
@@ -38,10 +35,12 @@ import com.kotcrab.vis.ui.util.dialog.*;
 
 public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 	
-	private Network net;
+	public Network net;
 	private Stage stage;
 	public Array<Object> messagesQueue;
 	public VisTable players_table;
+	public VisTextButton exit_button, ready_button, stage_button;
+	public VisLabel server_ip_label;
 	public Map<Byte, Player> players;
 	private String playerID;
 	public byte connectionID;
@@ -49,22 +48,12 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 	private VisImage stage_image;
 	public int currentStage;
 	
-	Lobby_Screen() throws IOException {
-		this(null);
-	};
-	
-	Lobby_Screen(String server_ip) throws IOException {
+	Lobby_Screen() {
 		Partida.pj_id = -1;
 		messagesQueue = new Array<>();
 		players = new HashMap<>();
 		
 		playerID = Assets.preferences.getString("name", "Chustilla") + MathUtils.random(10000);
-		
-		if(server_ip == null) {
-			net = new NetworkHost(this);
-		} else {
-			net = new NetworkClient(this, server_ip);
-		}
 		
 		stage = new Stage();
 		Table layout = new VisTable();
@@ -73,7 +62,9 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		stage.addActor(layout);
 		players_table = new VisTable();
 		
-		VisTextButton exit_button = new VisTextButton("Salir");
+		server_ip_label = new VisLabel();
+		
+		exit_button = new VisTextButton("Salir");
 		exit_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -85,7 +76,7 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 			}
 		});
 		
-		VisTextButton ready_button = new VisTextButton("Listo");
+		ready_button = new VisTextButton("Listo");
 		ready_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -113,7 +104,7 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		stage_image = new VisImage();
 		stage_image.setDrawable(stage_drawables[0]);
 		
-		VisTextButton stage_button = new VisTextButton("");
+		stage_button = new VisTextButton("");
 		stage_button.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
@@ -130,18 +121,7 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
 		stage_button.add(stage_image);
 		stage_button.setDisabled(true);
 		
-		// Solo para el que crea partida...
-		if(server_ip == null) {
-			((NetworkHost)net).addMyPlayer();
-			stage_button.setDisabled(false);
-			
-			try {
-				layout.add("ip: " + Ipify.getPublicIp()).colspan(2).padTop(10).row();
-			} catch (IOException e) {
-				DialogUtils.showErrorDialog(stage, "Error: no se puede mostrar la ip\nEstas conectado a internet?", e);
-			}
-		}
-		
+		layout.add(server_ip_label).colspan(2).row();
 		layout.add(exit_button).padTop(50).width(100);
 		layout.add(ready_button).padTop(50).width(100).row();
 		layout.add(players_table).colspan(2).padTop(15).left().row();

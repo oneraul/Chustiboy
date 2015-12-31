@@ -2,37 +2,72 @@ package chustiboy;
 
 import java.io.IOException;
 
+import org.ipify.Ipify;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.kotcrab.vis.ui.util.dialog.DialogUtils;
+import com.badlogic.gdx.utils.Array;
+import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisTextField;
 
-public class MainMenu_Screen extends ScreenAdapter {
+import chustiboy.EventSystem.EventConsumer;
+import chustiboy.net.NetworkClient;
+import chustiboy.net.NetworkHost;
+
+public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 	
 	private Stage stage;
+	private Label status;
+	private Array<Object> messagesQueue;
 	
 	MainMenu_Screen() {
+		messagesQueue = new Array<>();
+		
 		stage = new Stage();
 		Table layout = new VisTable();
 		layout.setFillParent(true);
 		stage.addActor(layout);
+		
+		status = new VisLabel();
 
 		VisTextButton create_button = new VisTextButton("Crear partida");
 		create_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				try {
-					TheGAME.pushScreen(new Lobby_Screen());
-				} catch(IOException e) {
-					DialogUtils.showErrorDialog(stage, "Error al crear partida", e);
-				}
+				status.setText("Creando servidor...");
+				
+				Lobby_Screen lobby = new Lobby_Screen();
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							lobby.net = new NetworkHost();
+						} catch(IOException e) {
+							status.setText("Error al crear el servidor");
+							return;
+						}
+		
+						lobby.net.lobby = lobby;
+						
+						((NetworkHost)lobby.net).addMyPlayer();
+						lobby.stage_button.setDisabled(false);
+						try {
+							lobby.server_ip_label.setText(Ipify.getPublicIp());
+						} catch(IOException e) {
+							lobby.server_ip_label.setText("Error: no se puede mostrar la ip\nEstas conectado a internet?");
+						}
+						
+						EventSystem.produceMessage(lobby, messagesQueue);
+					}
+				}.start();
 			}
 		});
 
@@ -44,11 +79,25 @@ public class MainMenu_Screen extends ScreenAdapter {
 		join_button.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				try {
-					TheGAME.pushScreen(new Lobby_Screen(ip_textfield.getText()));
-				} catch(IOException e) {
-					DialogUtils.showErrorDialog(stage, "Error al conectar", e);
-				}
+				status.setText("Conectando...");
+				
+				Lobby_Screen lobby = new Lobby_Screen();
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							lobby.net = new NetworkClient(ip_textfield.getText());
+						} catch(IOException e) {
+							status.setText("Error al conectar");
+							return;
+						}
+		
+						lobby.net.lobby = lobby;
+						lobby.server_ip_label.setText(ip_textfield.getText());
+						
+						EventSystem.produceMessage(lobby, messagesQueue);
+					}
+				}.start();
 			}
 		});
 		
@@ -60,6 +109,7 @@ public class MainMenu_Screen extends ScreenAdapter {
 			}
 		});
 
+		layout.add(status).colspan(2).padBottom(20).row();
 		layout.add(create_button).fillX().colspan(2).row();
 		layout.add(ip_textfield).padTop(10).padRight(3);
 		layout.add(join_button).fillX().padTop(10).row();
@@ -87,6 +137,7 @@ public class MainMenu_Screen extends ScreenAdapter {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(stage);
+		status.setText("");
 	}
 	
     @Override
@@ -99,9 +150,10 @@ public class MainMenu_Screen extends ScreenAdapter {
 	
 	@Override
 	public void render(float dt) {
+		EventSystem.consumeMessages(messagesQueue, this);
+		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     	Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
-    	
     	stage.act();
     	stage.draw();
 	}
@@ -109,5 +161,14 @@ public class MainMenu_Screen extends ScreenAdapter {
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+	
+	@Override
+	public void consumeMessage(Object o) {
+
+		if(o instanceof Lobby_Screen) {
+			TheGAME.pushScreen((Lobby_Screen)o);
+		}
+		
 	}
 }
