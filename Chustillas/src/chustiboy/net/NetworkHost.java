@@ -27,7 +27,7 @@ public class NetworkHost extends Network {
 	Server server;
 	private short number_of_players, ready_players;
 	
-	public NetworkHost(Lobby_Screen lobby) throws IOException {
+	public NetworkHost(final Lobby_Screen lobby) throws IOException {
 		
 		this.lobby = lobby;
 		
