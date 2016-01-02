@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import chustiboy.Assets;
 import chustiboy.EventSystem;
+import chustiboy.Lobby_Screen;
 import chustiboy.Partida;
 import chustiboy.Player;
 import chustiboy.net.packets.Packet_color;
@@ -26,9 +27,17 @@ public class NetworkHost extends Network {
 	Server server;
 	private short number_of_players, ready_players;
 	
-	public NetworkHost() throws IOException {
+	public NetworkHost(Lobby_Screen lobby) throws IOException {
 		
-		server = new Server();
+		this.lobby = lobby;
+		
+		server = new Server() {
+			@Override
+			protected Connection newConnection () {
+				return new PlayerConnection();
+			}
+		};
+		
 		endpoint = server;
 		registerPackets(endpoint);
 		
@@ -117,6 +126,8 @@ public class NetworkHost extends Network {
 			}
 		};
 		
+		addMyPlayer();
+		
 		server.addListener(lobby_listener);
 		server.start();
 		server.bind(TCPport, UDPport);
@@ -179,4 +190,8 @@ public class NetworkHost extends Network {
 		 	EventSystem.produceMessage("[START]", lobby.messagesQueue);
 		}
 	}
+}
+
+class PlayerConnection extends Connection {
+	
 }

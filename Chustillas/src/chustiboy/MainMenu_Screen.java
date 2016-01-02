@@ -95,8 +95,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 					@Override
 					public void run() {
 						try {
-							lobby.net = new NetworkHost();lobby.net.lobby = lobby;
-							((NetworkHost)lobby.net).addMyPlayer();
+							lobby.net = new NetworkHost(lobby);
 							lobby.stage_button.setDisabled(false);
 							try {
 								lobby.server_ip_label.setText(Ipify.getPublicIp());
@@ -136,8 +135,7 @@ public class MainMenu_Screen extends ScreenAdapter implements EventConsumer {
 					@Override
 					public void run() {
 						try {
-							lobby.net = new NetworkClient(ip_textfield.getText());
-							lobby.net.lobby = lobby;
+							lobby.net = new NetworkClient(lobby, ip_textfield.getText());
 							lobby.server_ip_label.setText(ip_textfield.getText());
 							EventSystem.produceMessage(lobby, messagesQueue);
 						} catch(IOException e) {
