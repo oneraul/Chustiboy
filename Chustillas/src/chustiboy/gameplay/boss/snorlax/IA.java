@@ -1,5 +1,6 @@
 package chustiboy.gameplay.boss.snorlax;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import chustiboy.Partida;
-import chustiboy.gameplay.ScreenShaker;
+import chustiboy.net.packets.boss.Packet_boss_position;
 
 public class IA {
 	BigBigMaloMaloso boss;
@@ -34,12 +35,13 @@ public class IA {
 		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0035f, new Task_FirePuddle())));
 		attack.addChild(new Probability<BigBigMaloMaloso>(0.015f, fireballs));
 		
-		Sequence<BigBigMaloMaloso> freakout = new Sequence<>();
-		freakout.addChild(new Task_LowHP());
-		freakout.addChild(new Task_FreakOut());
+		Sequence<BigBigMaloMaloso> charge = new Sequence<>();
+		charge.addChild(new Task_Timer(15f));
+		charge.addChild(new Task_Charge());
+		charge.addChild(new Task_Stomp());
 		
 		Selector<BigBigMaloMaloso> base = new Selector<>();
-		base.addChild(freakout);
+		base.addChild(charge);
 		base.addChild(attack);
 		
 		behaviourTree.addChild(base);
@@ -58,13 +60,27 @@ public class IA {
 	}
 }
 
-class Task_LowHP extends LeafTask<BigBigMaloMaloso> {
+class Task_Timer extends LeafTask<BigBigMaloMaloso> {
 
+	private float initialTime;
+	
+	Task_Timer(float initialTime) {
+		this.initialTime = initialTime;
+	}
+	
 	@Override
 	public Status execute() {
 		BigBigMaloMaloso boss = getObject();
 		
-		if(boss.hp <= 5) {
+		if(boss.charging) return Status.SUCCEEDED;
+		
+		boss.phase_timer -= Gdx.graphics.getDeltaTime();
+		
+		if(boss.phase_timer <= 0) {
+			boss.charging = true;
+			boss.phase_timer = initialTime;
+			boss.stomp_stop();
+			
 			return Status.SUCCEEDED;
 		}
 	
@@ -77,11 +93,51 @@ class Task_LowHP extends LeafTask<BigBigMaloMaloso> {
 	}
 }
 
-class Task_FreakOut extends LeafTask<BigBigMaloMaloso> {
-
+class Task_Charge extends LeafTask<BigBigMaloMaloso> {
+	
+	private Vector2 tmp = new Vector2();
+	private float distance_threshold2 = 5f, v = 3;
+	
 	@Override
 	public Status execute() {
-		ScreenShaker.shake();
+		BigBigMaloMaloso boss = getObject();
+		
+		if(boss.target == null && boss.charging) {
+			boss.target = Partida.chustillas.get(MathUtils.random(Partida.chustillas.size-1));
+		}
+		
+		tmp.set(boss.getPosition()).sub(boss.target.getPosition());
+		if(tmp.len2() > distance_threshold2) {
+			tmp.set(boss.getPosition().sub(tmp.nor().scl(v)));
+			boss.setPosition(tmp.x, tmp.y);
+			
+			Packet_boss_position p = new Packet_boss_position();
+			p.boss_id = boss.id;
+			p.x = tmp.x;
+			p.y = tmp.y;
+			boss.net.sendTCP(p);
+			
+			return Status.FAILED;
+		} else {
+			boss.target = null;
+			boss.charging = false;
+			return Status.SUCCEEDED;
+		}
+	}
+
+	@Override
+	protected Task<BigBigMaloMaloso> copyTo(Task<BigBigMaloMaloso> task) {
+		return task;
+	}
+}
+
+class Task_Stomp extends LeafTask<BigBigMaloMaloso> {
+	
+	@Override
+	public Status execute() {
+		BigBigMaloMaloso boss = getObject();
+		
+		boss.stomp(boss.getPosition().x, boss.getPosition().y);
 		return Status.SUCCEEDED;
 	}
 

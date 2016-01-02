@@ -17,6 +17,7 @@ import chustiboy.net.packets.boss.snorlax.Packet_boss_init_casita;
 import chustiboy.net.packets.boss.snorlax.Packet_boss_spawn_firePuddle;
 import chustiboy.net.packets.boss.snorlax.Packet_boss_spawn_fireball;
 import chustiboy.net.packets.boss.snorlax.Packet_boss_stomp;
+import chustiboy.net.packets.boss.snorlax.Packet_boss_stomp_stop;
 import chustiboy.net.packets.boss.snorlax.Packet_boss_tron;
 import chustiboy.Assets;
 import chustiboy.GameOptions;
@@ -33,12 +34,15 @@ public class BigBigMaloMaloso extends Boss {
 	Pool<Charco> charcos;
 	Pool<Fireball> fireballs;
 	Casita casita;
-	private Network net;
+	Network net;
 	boolean dead;
 	
 	// IA & blackboard
 	private IA ia;
 	int hp;
+	float phase_timer;
+	boolean charging;
+	Chustilla target;
 
 	public BigBigMaloMaloso(Network net) {
 		if(net instanceof NetworkHost) {
@@ -207,6 +211,12 @@ public class BigBigMaloMaloso extends Boss {
 	
 	public void stomp_stop() {
 		stomp.stop();
+		
+		if(ia != null) {
+			Packet_boss_stomp_stop p = new Packet_boss_stomp_stop();
+			p.boss_id = this.id;
+			net.sendTCP(p);
+		}
 	}
 	
 	public void shootFireball(Vector2 pos, Vector2 dir) {
