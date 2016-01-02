@@ -1,10 +1,6 @@
-package chustiboy.gameplay.boss;
+package chustiboy.gameplay;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import chustiboy.gameplay.ESPRAIT;
-import chustiboy.gameplay.Rectangle;
-import chustiboy.gameplay.Collider;
-import chustiboy.gameplay.Dibujable;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 

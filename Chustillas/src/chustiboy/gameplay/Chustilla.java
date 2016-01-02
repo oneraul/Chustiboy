@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.Array;
 
 import chustiboy.gameplay.AnimationData.Direction;
 import chustiboy.gameplay.ChustillaAnimationData.State;
-import chustiboy.gameplay.boss.Boss;
 
 public class Chustilla implements Dibujable {
 	

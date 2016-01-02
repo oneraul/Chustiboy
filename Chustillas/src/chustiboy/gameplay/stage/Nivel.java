@@ -3,8 +3,8 @@ package chustiboy.gameplay.stage;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 
+import chustiboy.gameplay.Boss;
 import chustiboy.gameplay.Muro;
-import chustiboy.gameplay.boss.Boss;
 
 public class Nivel {
 	public Array<Muro> muros;

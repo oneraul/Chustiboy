@@ -1,12 +1,12 @@
 package chustiboy;
 
 import chustiboy.EventSystem.EventConsumer;
+import chustiboy.gameplay.Boss;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.Dibujable;
 import chustiboy.gameplay.Flecha;
 import chustiboy.gameplay.Muro;
 import chustiboy.gameplay.ScreenShaker;
-import chustiboy.gameplay.boss.Boss;
 import chustiboy.gameplay.boss.snorlax.BigBigMaloMaloso;
 import chustiboy.net.Network;
 import chustiboy.net.NetworkClient;

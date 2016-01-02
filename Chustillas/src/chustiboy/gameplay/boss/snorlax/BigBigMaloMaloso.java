@@ -1,6 +1,7 @@
 package chustiboy.gameplay.boss.snorlax;
 
 import chustiboy.Partida;
+import chustiboy.gameplay.Boss;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.Collider;
 import chustiboy.gameplay.ESPRAIT;
@@ -9,7 +10,6 @@ import chustiboy.gameplay.Pool;
 import chustiboy.gameplay.Rectangle;
 import chustiboy.gameplay.ScreenShaker;
 import chustiboy.gameplay.Dibujable;
-import chustiboy.gameplay.boss.Boss;
 import chustiboy.net.Network;
 import chustiboy.net.NetworkHost;
 import chustiboy.net.packets.boss.Packet_boss_dead;
