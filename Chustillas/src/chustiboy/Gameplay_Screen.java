@@ -79,7 +79,6 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	messagesQueue = new Array<>();
     	
     	cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    	((OrthographicCamera)cam).setToOrtho(false);
 		ScreenShaker.setCam(cam);
 		
 		batch = new SpriteBatch();
@@ -89,8 +88,9 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 			}
 		};
 		
-		fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight(), false);
+		fbo = new FrameBuffer(Format.RGBA8888, 
+				//Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+				nextPowerOfTwo(Gdx.graphics.getWidth()), nextPowerOfTwo(Gdx.graphics.getHeight()), false);
 		fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0,
 				Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		fboRegion.flip(false, true);
@@ -383,5 +383,13 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}
+    }
+    
+    private int nextPowerOfTwo(int i) {
+		int size = Integer.highestOneBit(i);
+		while(i > size){
+			size = size << 1;
+		}
+		return size;
     }
 }
