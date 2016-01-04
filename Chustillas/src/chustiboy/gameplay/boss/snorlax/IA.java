@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.branch.Selector;
 import com.badlogic.gdx.ai.btree.branch.Sequence;
 import com.badlogic.gdx.ai.btree.decorator.AlwaysSucceed;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -80,6 +81,7 @@ class Task_Timer extends LeafTask<BigBigMaloMaloso> {
 			boss.charging = true;
 			boss.phase_timer = initialTime;
 			boss.stomp_stop();
+			boss.stageColor.set(Color.FIREBRICK);
 			
 			return Status.SUCCEEDED;
 		}
@@ -121,6 +123,7 @@ class Task_Charge extends LeafTask<BigBigMaloMaloso> {
 		} else {
 			boss.target = null;
 			boss.charging = false;
+			boss.stageColor.set(Color.WHITE);
 			return Status.SUCCEEDED;
 		}
 	}

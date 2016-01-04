@@ -8,13 +8,12 @@ import com.kotcrab.vis.ui.widget.VisTable;
 import chustiboy.gameplay.Boss;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.Muro;
-import chustiboy.gameplay.stage.Nivel;
 
 public class Partida {
+	public static byte pj_id;
 	public static Array<Chustilla> chustillas = new Array<>();
 	public static Array<Boss> bosses = new Array<>();
 	public static Array<Muro> muros = new Array<>();
-	public static byte pj_id;
 	public static int stage_width, stage_height;
 	public static Texture sueloTexture;
 	
@@ -32,27 +31,5 @@ public class Partida {
 			chustilla.setColor(player.r, player.g, player.b);
 			Partida.chustillas.add(chustilla);
 		}
-	}
-	
-	public static void setLevel(Nivel level) {
-		//clear
-		bosses.clear();
-		muros.clear();
-		
-		//set
-		bosses.addAll(level.bosses);
-		muros.addAll(level.muros);
-		stage_width = level.width;
-		stage_height = level.height;
-		
-		for(short i = 0; i < bosses.size; i++) {
-			bosses.get(i).id = i;
-		}
-		
-		for(Chustilla chustilla : chustillas) {
-			chustilla.setPosition(level.spawn_x, level.spawn_y);
-		}
-		
-		sueloTexture = Assets.suelo(level.suelo0, level.suelo1);
 	}
 }

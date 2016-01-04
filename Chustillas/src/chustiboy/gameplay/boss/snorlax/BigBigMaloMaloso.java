@@ -22,6 +22,7 @@ import chustiboy.net.packets.boss.snorlax.Packet_boss_tron;
 import chustiboy.Assets;
 import chustiboy.GameOptions;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -37,6 +38,8 @@ public class BigBigMaloMaloso extends Boss {
 	Network net;
 	boolean dead;
 	
+	public Color stageColor;
+	
 	// IA & blackboard
 	private IA ia;
 	int hp;
@@ -50,6 +53,7 @@ public class BigBigMaloMaloso extends Boss {
 			ia = new IA(this);
 		}
 		
+		stageColor = new Color(Color.WHITE);
 		sprite = new ESPRAIT(Assets.textures[2], size, size);
 		dead = false;
 		
