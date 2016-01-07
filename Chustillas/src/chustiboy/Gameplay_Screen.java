@@ -32,11 +32,13 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -51,29 +53,35 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 import java.util.Comparator;
 
 public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
+
+    public    Array<Object> messagesQueue;
+	private   Network net;
+    private   OrthographicCamera cam, fboCam;
+    protected FrameBuffer fbo;
+	protected TextureRegion fboRegion;
+    protected SpriteBatch batch, fboBatch;
+	private   Comparator<Dibujable> comparator;
+    private   InputControllerAndroid inputControllerAndroid;
+    private   Stage stage;
+	private   VisLabel hp_label;
+	private   VisWindow menu_window;
+	private   TextureRegion suelo;
+	protected Texture sueloTexture;
+    protected Array<Chustilla> chustillas;
+    protected Array<Muro> muros;
+	protected Array<Boss> bosses;
+	protected float spawn_x, spawn_y;
+	private   Array<Dibujable> dibujables;
 	
-	private Network net;
-    private Camera cam;
-    private SpriteBatch batch;
-	private Comparator<Dibujable> comparator;
-    private Stage stage;
-	private VisLabel hp_label;
-	private VisWindow menu_window;
-	private TextureRegion suelo;
-    private Array<Chustilla> chustillas;
-	private Array<Dibujable> dibujables;
-    public Array<Object> messagesQueue;
-    private InputControllerAndroid inputControllerAndroid;
-	
-	Gameplay_Screen(final Network net) {
+	protected Gameplay_Screen(final Network net) {
 		this.net = net;
 		net.gameplay = this;
 		
     	messagesQueue = new Array<>();
-    	
-    	cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		ScreenShaker.setCam(cam);
+    	muros = new Array<>();
+		bosses = new Array<>();
 		
+		fboBatch = new SpriteBatch();
 		batch = new SpriteBatch();
 		comparator = new Comparator<Dibujable>() {
 			public int compare(Dibujable a, Dibujable b) {
@@ -81,22 +89,11 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 			}
 		};
 		
-		suelo = new TextureRegion(Partida.sueloTexture);
-		suelo.setRegionWidth(Partida.stage_width/2);
-		suelo.setRegionHeight(Partida.stage_height/2);
+		fboCam = new OrthographicCamera();
+		cam = new OrthographicCamera();
+		ScreenShaker.setCam(cam);
 		
-		chustillas = Partida.chustillas; 
-		Flecha.fillPool(chustillas.size);
-		
-		dibujables = new Array<>();
-		for(Boss boss : Partida.bosses)
-			boss.addDibujablesToList(dibujables);
-		for(Muro muro : Partida.muros)
-			dibujables.add(muro);
-		for(Flecha flecha : Flecha.pool)
-			dibujables.add(flecha);
-		for(Chustilla chustilla : chustillas)
-			dibujables.add(chustilla);
+		fboRegion = new TextureRegion();
 		
 		// GUI -----------------------------
     	stage = new Stage();
@@ -139,12 +136,12 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		menu_window = new VisWindow("");
 		menu_window.setVisible(false);
 		menu_window.setMovable(false);
-		menu_window.setPosition(Gdx.graphics.getWidth()/2 + menu_window.getWidth()/2, Gdx.graphics.getHeight()/2 - menu_window.getHeight()/2);
-		stage.addActor(menu_window);
 		menu_window.add(exit_button).row();
 		menu_window.add(debug_checkbox).row();
 		menu_window.add(new GameOptions());
-		menu_window.setSize(Gdx.graphics.getWidth()/2 - menu_window.getWidth()/2 - 15, menu_window.getMinHeight());
+		menu_window.setPosition(10, 10);
+		menu_window.setSize(280, menu_window.getMinHeight());
+		stage.addActor(menu_window);
 		
 		// INPUT ---------------------------
 		InputController inputController = new InputController(net, messagesQueue);
@@ -162,7 +159,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		
 		InputMultiplexer multiplexer = new InputMultiplexer();
-		// TODO
+		// TODO debería aparecer en el producto final?
 		multiplexer.addProcessor(new InputAdapter() {
 			@Override
 			public boolean scrolled(int amount) {
@@ -182,6 +179,38 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		Gdx.input.setInputProcessor(multiplexer);
 	}
+	
+	protected void init() {
+		//clear
+		Partida.bosses.clear();
+		Partida.muros.clear();
+		
+		//set
+		chustillas = Partida.chustillas;
+		Flecha.fillPool(chustillas.size);
+		Partida.muros = muros;
+		Partida.bosses = bosses;
+		for(short i = 0; i < bosses.size; i++) {
+			bosses.get(i).id = i;
+		}
+		
+		// set dibujables
+		dibujables = new Array<>();
+		for(Boss boss : bosses)
+			boss.addDibujablesToList(dibujables);
+		for(Muro muro : muros)
+			dibujables.add(muro);
+		for(Flecha flecha : Flecha.pool)
+			dibujables.add(flecha);
+		for(Chustilla chustilla : chustillas)
+			dibujables.add(chustilla);
+		
+		suelo = new TextureRegion(sueloTexture);
+		suelo.setRegionWidth(Partida.stage_width/2);
+		suelo.setRegionHeight(Partida.stage_height/2);
+		
+		Partida.sueloTexture = sueloTexture;
+	}
     
     @Override
     public void resize(int width, int height) {
@@ -189,8 +218,20 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		stage.getCamera().viewportWidth = width;
 		stage.getCamera().viewportHeight = height;
 		stage.getCamera().update();
-		cam.viewportWidth = width;
-		cam.viewportHeight = height;
+		
+		fbo = new FrameBuffer(Format.RGB888, nextPowerOfTwo(width), nextPowerOfTwo(height), false);
+		fboRegion.setTexture(fbo.getColorBufferTexture());
+		fboRegion.setRegion((fbo.getWidth()-width)/2, (fbo.getHeight()-height)/2, width, height);
+		fboRegion.flip(false, true);
+
+		fboCam.viewportWidth  = width;
+		fboCam.viewportHeight = height;
+		fboCam.position.set(width/2, height/2, fboCam.position.z);
+		fboCam.update();
+		fboBatch.setProjectionMatrix(fboCam.combined);
+
+		cam.viewportWidth  = fbo.getWidth();
+		cam.viewportHeight = fbo.getHeight();
 		cam.update();
     }
     
@@ -221,14 +262,25 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     }
 	
 	private void draw() {
-    	cam.position.set(chustillas.get(Partida.pj_id).getPosition(), cam.position.z);
-    	cam.update();
-    	ScreenShaker.update();
 		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		fbo.begin();
+		drawScene();
+		fbo.end();
+
+		postProcessing();
+		
+		drawUI();
+	}
+	
+	private void drawScene() {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     	Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		
+		cam.position.set(chustillas.get(Partida.pj_id).getPosition(), cam.position.z);
+    	cam.update();
+    	ScreenShaker.update();
 		batch.setProjectionMatrix(cam.combined);
+		
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
@@ -237,11 +289,18 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 				dibujable.draw(batch);
 		}
 		batch.end();
-			
+	}
+	
+	protected void postProcessing() {
+		fboBatch.begin();
+		fboBatch.draw(fboRegion, 0, 0);
+		fboBatch.end();
+	}
+	
+	private void drawUI() {
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.displayControlsOnScreen();
 		}
-
 		hp_label.setText(chustillas.get(Partida.pj_id).getHp() + " vidas \n" + Flecha.pool.size + " flechas\n" + Gdx.graphics.getFramesPerSecond() + " fps");
 		stage.draw();
 	}
@@ -339,10 +398,20 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     
     @Override
     public void dispose() {
-    	Partida.sueloTexture.dispose();
+    	sueloTexture.dispose();
+    	fbo.dispose();
 		batch.dispose();
+		fboBatch.dispose();
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}
+    }
+    
+    private int nextPowerOfTwo(int i) {
+		int size = Integer.highestOneBit(i);
+		while(i > size){
+			size = size << 1;
+		}
+		return size;
     }
 }

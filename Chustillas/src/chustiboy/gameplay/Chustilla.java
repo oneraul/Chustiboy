@@ -144,8 +144,8 @@ public class Chustilla implements Dibujable {
 			move(dir.x * v, 0);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
-					     if(D) setPosition(muro.x - muro.w/2 - size/2, this.pos.y);
-					else if(A) setPosition(muro.x + muro.w/2 + size/2, this.pos.y);
+					     if(D) setPosition(muro.x() - muro.width()/2 - size/2, this.pos.y);
+					else if(A) setPosition(muro.x() + muro.width()/2 + size/2, this.pos.y);
 				}
 			}
 			for(Boss boss : Partida.bosses) {
@@ -161,8 +161,8 @@ public class Chustilla implements Dibujable {
 	       	move(0, dir.y * v);
 			for(Muro muro : Partida.muros) {
 				if(muro.collider.collide(collider)) {
-					     if(W) setPosition(this.pos.x, muro.y - size);
-					else if(S) setPosition(this.pos.x, muro.y + muro.h);
+					     if(W) setPosition(this.pos.x, muro.y() - size);
+					else if(S) setPosition(this.pos.x, muro.y() + muro.height());
 				}
 			}
 			for(Boss boss : Partida.bosses) {

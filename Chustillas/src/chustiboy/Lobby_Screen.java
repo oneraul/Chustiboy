@@ -146,20 +146,18 @@ public class Lobby_Screen extends ScreenAdapter implements EventConsumer {
     }
 	
 	private void startGame() {
-		Partida.setChustillas(players_table);
+		synchronized(messagesQueue) { messagesQueue.clear(); }
+		net.setGameplayListener();
 		
+		Partida.setChustillas(players_table);
 		switch(currentStage) {
 			case 0:
-				Partida.setLevel(new EmptyStage());
+				TheGAME.pushScreen(new EmptyStage(net));
 				break;
 			case 1:
-				Partida.setLevel(new StageSnorlax(net));
+				TheGAME.pushScreen(new StageSnorlax(net));
 				break;
 		}
-		
-		net.setGameplayListener();
-		synchronized(messagesQueue) { messagesQueue.clear(); }
-		TheGAME.pushScreen(new Gameplay_Screen(net));
 	}
 	
 	public String getPlayerID() {
