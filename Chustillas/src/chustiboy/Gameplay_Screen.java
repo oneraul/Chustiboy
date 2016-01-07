@@ -56,8 +56,10 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 
     public    Array<Object> messagesQueue;
 	private   Network net;
-    private   OrthographicCamera cam;
-    protected SpriteBatch batch;
+    private   OrthographicCamera cam, fboCam;
+    protected FrameBuffer fbo;
+	protected TextureRegion fboRegion;
+    protected SpriteBatch batch, fboBatch;
 	private   Comparator<Dibujable> comparator;
     private   InputControllerAndroid inputControllerAndroid;
     private   Stage stage;
@@ -68,11 +70,8 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     protected Array<Chustilla> chustillas;
     protected Array<Muro> muros;
 	protected Array<Boss> bosses;
-	protected int width, height;
 	protected float spawn_x, spawn_y;
 	private   Array<Dibujable> dibujables;
-    protected FrameBuffer fbo;
-	protected TextureRegion fboRegion;
 	
 	protected Gameplay_Screen(final Network net) {
 		this.net = net;
@@ -81,10 +80,8 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	messagesQueue = new Array<>();
     	muros = new Array<>();
 		bosses = new Array<>();
-    	
-    	cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		ScreenShaker.setCam(cam);
 		
+		fboBatch = new SpriteBatch();
 		batch = new SpriteBatch();
 		comparator = new Comparator<Dibujable>() {
 			public int compare(Dibujable a, Dibujable b) {
@@ -92,13 +89,11 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 			}
 		};
 		
-		fbo = new FrameBuffer(Format.RGBA8888, 
-				Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-				// TODO hacer que el FBO tenga medidas potencia de 2
-				//nextPowerOfTwo(Gdx.graphics.getWidth()), nextPowerOfTwo(Gdx.graphics.getHeight()), false);
-		fboRegion = new TextureRegion(fbo.getColorBufferTexture(), 0, 0,
-				Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		fboRegion.flip(false, true);
+		fboCam = new OrthographicCamera();
+		cam = new OrthographicCamera();
+		ScreenShaker.setCam(cam);
+		
+		fboRegion = new TextureRegion();
 		
 		// GUI -----------------------------
     	stage = new Stage();
@@ -141,12 +136,12 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		menu_window = new VisWindow("");
 		menu_window.setVisible(false);
 		menu_window.setMovable(false);
-		menu_window.setPosition(Gdx.graphics.getWidth()/2 + menu_window.getWidth()/2, Gdx.graphics.getHeight()/2 - menu_window.getHeight()/2);
-		stage.addActor(menu_window);
 		menu_window.add(exit_button).row();
 		menu_window.add(debug_checkbox).row();
 		menu_window.add(new GameOptions());
-		menu_window.setSize(Gdx.graphics.getWidth()/2 - menu_window.getWidth()/2 - 15, menu_window.getMinHeight());
+		menu_window.setPosition(10, 10);
+		menu_window.setSize(280, menu_window.getMinHeight());
+		stage.addActor(menu_window);
 		
 		// INPUT ---------------------------
 		InputController inputController = new InputController(net, messagesQueue);
@@ -223,8 +218,20 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		stage.getCamera().viewportWidth = width;
 		stage.getCamera().viewportHeight = height;
 		stage.getCamera().update();
-		cam.viewportWidth = width;
-		cam.viewportHeight = height;
+		
+		fbo = new FrameBuffer(Format.RGB888, nextPowerOfTwo(width), nextPowerOfTwo(height), false);
+		fboRegion.setTexture(fbo.getColorBufferTexture());
+		fboRegion.setRegion((fbo.getWidth()-width)/2, (fbo.getHeight()-height)/2, width, height);
+		fboRegion.flip(false, true);
+
+		fboCam.viewportWidth  = width;
+		fboCam.viewportHeight = height;
+		fboCam.position.set(width/2, height/2, fboCam.position.z);
+		fboCam.update();
+		fboBatch.setProjectionMatrix(fboCam.combined);
+
+		cam.viewportWidth  = fbo.getWidth();
+		cam.viewportHeight = fbo.getHeight();
 		cam.update();
     }
     
@@ -257,31 +264,23 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 	private void draw() {
 		
 		fbo.begin();
-		cam.setToOrtho(false, fbo.getWidth(), fbo.getHeight());
 		drawScene();
 		fbo.end();
-		
-		cam.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-   		//cam.position.set(Gdx.graphics.getWidth()/2+fbo.getWidth()-Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/2, 0);
-		cam.update();
-		batch.setProjectionMatrix(cam.combined);
-		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    	Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+
 		postProcessing();
 		
 		drawUI();
 	}
 	
 	private void drawScene() {
-		cam.position.set(chustillas.get(Partida.pj_id).getPosition(), cam.position.z);
-    	cam.update();
-    	ScreenShaker.update();
-		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     	Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		
+		cam.position.set(chustillas.get(Partida.pj_id).getPosition(), cam.position.z);
+    	cam.update();
+    	ScreenShaker.update();
 		batch.setProjectionMatrix(cam.combined);
+		
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
@@ -293,9 +292,9 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 	}
 	
 	protected void postProcessing() {
-		batch.begin();
-		batch.draw(fboRegion, 0, 0);
-		batch.end();
+		fboBatch.begin();
+		fboBatch.draw(fboRegion, 0, 0);
+		fboBatch.end();
 	}
 	
 	private void drawUI() {
@@ -400,7 +399,9 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     @Override
     public void dispose() {
     	sueloTexture.dispose();
+    	fbo.dispose();
 		batch.dispose();
+		fboBatch.dispose();
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}

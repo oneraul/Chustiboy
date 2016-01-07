@@ -20,8 +20,8 @@ public class StageSnorlax extends Gameplay_Screen {
 	public StageSnorlax(Network net) {
 		super(net);
 		
-		width = 1000;
-		height = 800;
+		int width = 1000;
+		int height = 800;
 		
 		Partida.stage_width = width;
 		Partida.stage_height = height;
@@ -49,9 +49,9 @@ public class StageSnorlax extends Gameplay_Screen {
 	
 	@Override
 	protected void postProcessing() {
-		batch.begin();
-		batch.setColor(postColor);
-		batch.draw(fboRegion, 0, 0);
-		batch.end();
+		fboBatch.begin();
+		fboBatch.setColor(postColor);
+		fboBatch.draw(fboRegion, 0, 0);
+		fboBatch.end();
 	}
 }

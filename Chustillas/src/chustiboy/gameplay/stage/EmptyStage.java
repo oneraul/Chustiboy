@@ -17,8 +17,8 @@ public class EmptyStage extends Gameplay_Screen {
 	public EmptyStage(Network net) {
 		super(net);
 		
-		width = 500;
-		height = 500;
+		int width = 500;
+		int height = 500;
 		
 		Partida.stage_width = width;
 		Partida.stage_height = height;
