@@ -39,12 +39,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.kotcrab.vis.ui.widget.VisCheckBox;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
@@ -60,6 +62,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     protected FrameBuffer fbo;
 	protected TextureRegion fboRegion;
     protected SpriteBatch batch, fboBatch;
+    private   ShaderProgram tapadoShader;
 	private   Comparator<Dibujable> comparator;
     private   InputControllerAndroid inputControllerAndroid;
     private   Stage stage;
@@ -94,6 +97,17 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		ScreenShaker.setCam(cam);
 		
 		fboRegion = new TextureRegion();
+		
+		ShaderProgram.pedantic = false;
+		String passthrough = Gdx.files.internal("assets/passthrough.vert").readString();
+		String tapadoFrag  = Gdx.files.internal("assets/tapado.frag").readString();
+		tapadoShader = new ShaderProgram(passthrough, tapadoFrag);
+		
+		// TODO solo para debug
+      	if(!tapadoShader.isCompiled())
+      		throw new GdxRuntimeException(tapadoShader.getLog());
+      	if(tapadoShader.getLog().length() != 0)
+      		System.out.println(tapadoShader.getLog());
 		
 		// GUI -----------------------------
     	stage = new Stage();
@@ -281,12 +295,22 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	ScreenShaker.update();
 		batch.setProjectionMatrix(cam.combined);
 		
+		batch.setShader(SpriteBatch.createDefaultShader());
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
 			dibujables.sort(comparator);
 			for(Dibujable dibujable : dibujables)
 				dibujable.draw(batch);
+		}
+		batch.end();
+		
+		batch.setShader(tapadoShader);
+		batch.begin();
+		{
+			for(Flecha flecha : Flecha.all) {
+				if(flecha.tapada) flecha.draw(batch);
+			}
 		}
 		batch.end();
 	}
@@ -402,6 +426,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	fbo.dispose();
 		batch.dispose();
 		fboBatch.dispose();
+		tapadoShader.dispose();
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}

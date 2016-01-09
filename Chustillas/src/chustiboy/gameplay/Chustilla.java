@@ -103,6 +103,7 @@ public class Chustilla implements Dibujable {
 			
 			for(Muro muro : Partida.muros) {
 				if(flecha.collider.collide(muro.collider)) {
+					flecha.checkTapada(muro.collider_tapar);
 					flecha.clavarse(muro.collider);
 					flechas.removeIndex(i);
 					break;

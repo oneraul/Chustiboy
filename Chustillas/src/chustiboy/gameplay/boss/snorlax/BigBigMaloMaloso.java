@@ -115,6 +115,7 @@ public class BigBigMaloMaloso extends Boss {
 		for(Collider collider : hitColliders) {
 			for(Flecha flecha : collider.flechas) {
 				flecha.dead = true;
+				flecha.tapada = false;
 			}
 			Flecha.pool.addAll(collider.flechas);
 		}

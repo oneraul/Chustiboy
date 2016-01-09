@@ -1,6 +1,5 @@
 package chustiboy.gameplay;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,7 +11,7 @@ public class Muro implements Dibujable {
 	
 	private float x, y;
 	private int width, height, z;
-	public Rectangle collider;
+	public Rectangle collider, collider_tapar;
 	private TextureRegion textureRegion;
 	private Color color_front, color_top;
 	
@@ -29,7 +28,8 @@ public class Muro implements Dibujable {
 		this.color_front = new Color(color);
 		this.color_top   = new Color(color.r*0.4f, color.g*0.4f, color.b*0.4f, 1);
 		
-		collider = new Rectangle(new Vector2(x, y), width, height);
+		collider = new Rectangle(x, y, width, height);
+		collider_tapar = new Rectangle(x, y, width, height+z);
 		
 		textureRegion = new TextureRegion(Assets.textures[6]);
 	}

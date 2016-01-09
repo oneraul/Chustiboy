@@ -50,6 +50,7 @@ public abstract class Collider {
 				if(flecha.collider.collide(chustilla.collider)) {
 					flechas.removeIndex(i);
 					Flecha.pool.add(flecha);
+					flecha.tapada = false;
 					flecha.dead = true;
 					break;
 				}

@@ -6,15 +6,17 @@ import com.badlogic.gdx.utils.Array;
 
 import chustiboy.Assets;
 import chustiboy.GameOptions;
+import chustiboy.Partida;
 
 public class Flecha implements Dibujable {
 	
 	public static Array<Flecha> pool = new Array<Flecha>();
+	public static Array<Flecha> all  = new Array<Flecha>();
 	
-	private float v, scale;
+	private float v, scale, z_tapada;
 	Vector2 pos, dir;
 	public Point collider;
-	public boolean dead, clavada;
+	public boolean dead, clavada, tapada;
 	FlechaAnimationData animationData;
 	AnimatedSprite animation;
 	
@@ -34,11 +36,11 @@ public class Flecha implements Dibujable {
 	public void init(Vector2 pos, Vector2 dir, byte animationDirection) {
 		dead = false;
 		clavada = false;
+		tapada = false;
 		
 		this.pos.set(pos);
 		this.dir.set(dir).scl(v);
 		
-		// TODO el collider y el sprite no coinciden. Cuando va hacia el este el collider queda en la cola, cuando va hacia el oeste, va en la punta
 		collider.pos.set(pos);
 		collider.offset.set(0, 0);
 		
@@ -48,11 +50,17 @@ public class Flecha implements Dibujable {
 	
 	public void update() {
 		move(dir.x, dir.y);
+		
+		tapada = false;
+		for(Muro muro : Partida.muros) {
+			if(checkTapada(muro.collider_tapar)) break;
+		}
 	}
 	
 	@Override
 	public float getDrawZ() {
-		return collider.pos.y + collider.offset.y;
+		if(!tapada) return collider.pos.y;
+		else 		return z_tapada;
 	}
 
 	@Override
@@ -71,10 +79,22 @@ public class Flecha implements Dibujable {
 	public static void fillPool(int chustillas) {
 		int flechas_por_pj = 10;
 		
+		all.clear();
 		pool.clear();
 		for(int i = chustillas * flechas_por_pj; i > 0; i--) {
 			pool.add(new Flecha());
 		}
+		all.addAll(pool);
+	}
+	
+	public boolean checkTapada(Collider collider_tapar) {
+		if(collider.collide(collider_tapar)) {
+			tapada = true;
+			z_tapada = collider_tapar.pos.y-1;
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public void clavarse(Collider parent_collider) {
