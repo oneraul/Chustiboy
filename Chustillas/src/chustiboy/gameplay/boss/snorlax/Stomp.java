@@ -21,7 +21,7 @@ public class Stomp implements Dibujable {
 		active = false;
 
 		particleSystem = new ParticleSystem.Builder(0, 0, width, 5)
-			.max_particles(600).initial_particle_size(10f).build();
+			.max_particles(150).emission_rate(15).initial_particle_size(10f).build();
 		
 		collider = new Rectangle(0, 0, width, 100);
 	}
