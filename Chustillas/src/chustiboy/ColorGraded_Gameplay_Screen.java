@@ -15,7 +15,7 @@ public class ColorGraded_Gameplay_Screen extends Gameplay_Screen {
 		super(net);
 		
 		ShaderProgram.pedantic = false;
-		String VERTEX = Gdx.files.internal("assets/colorGrading.vert").readString();
+		String VERTEX = Gdx.files.internal("assets/passthrough.vert").readString();
 		String FRAGMENT = Gdx.files.internal("assets/colorGrading.frag").readString();
 		shader = new ShaderProgram(VERTEX, FRAGMENT);
 		
@@ -27,7 +27,6 @@ public class ColorGraded_Gameplay_Screen extends Gameplay_Screen {
 			
 		shader.begin();
 		shader.setUniformi("u_lut", 1);
-		shader.setUniformMatrix("u_worldView", batch.getProjectionMatrix());
 		shader.end();
 
 		fboBatch.setShader(shader);
@@ -37,7 +36,6 @@ public class ColorGraded_Gameplay_Screen extends Gameplay_Screen {
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		shader.begin();
-		shader.setUniformMatrix("u_worldView", fboBatch.getProjectionMatrix());
 		shader.end();
 	}
 	
