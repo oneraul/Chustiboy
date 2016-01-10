@@ -62,7 +62,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     protected FrameBuffer fbo;
 	protected TextureRegion fboRegion;
     protected SpriteBatch batch, fboBatch;
-    private   ShaderProgram tapadoShader;
+    private   ShaderProgram outlineShader;
 	private   Comparator<Dibujable> comparator;
     private   InputControllerAndroid inputControllerAndroid;
     private   Stage stage;
@@ -99,15 +99,19 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		fboRegion = new TextureRegion();
 		
 		ShaderProgram.pedantic = false;
-		String passthrough = Gdx.files.internal("assets/passthrough.vert").readString();
-		String tapadoFrag  = Gdx.files.internal("assets/tapado.frag").readString();
-		tapadoShader = new ShaderProgram(passthrough, tapadoFrag);
+		String passthroughVert = Gdx.files.internal("assets/passthrough.vert").readString();
+		String outlineFrag  = Gdx.files.internal("assets/outline.frag").readString();
+		outlineShader = new ShaderProgram(passthroughVert, outlineFrag);
 		
 		// TODO solo para debug
-      	if(!tapadoShader.isCompiled())
-      		throw new GdxRuntimeException(tapadoShader.getLog());
-      	if(tapadoShader.getLog().length() != 0)
-      		System.out.println(tapadoShader.getLog());
+      	if(!outlineShader.isCompiled())
+      		throw new GdxRuntimeException(outlineShader.getLog());
+      	if(outlineShader.getLog().length() != 0)
+      		System.out.println(outlineShader.getLog());
+			
+		outlineShader.begin();
+		outlineShader.setUniformf("u_stepSize", 5f/Assets.textures[7].getWidth(), 5f/Assets.textures[7].getHeight());
+		outlineShader.end();
 		
 		// GUI -----------------------------
     	stage = new Stage();
@@ -173,7 +177,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		
 		InputMultiplexer multiplexer = new InputMultiplexer();
-		// TODO debería aparecer en el producto final?
+		// TODO deberï¿½a aparecer en el producto final?
 		multiplexer.addProcessor(new InputAdapter() {
 			@Override
 			public boolean scrolled(int amount) {
@@ -305,7 +309,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		batch.end();
 		
-		batch.setShader(tapadoShader);
+		batch.setShader(outlineShader);
 		batch.begin();
 		{
 			for(Flecha flecha : Flecha.all) {
@@ -426,7 +430,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	fbo.dispose();
 		batch.dispose();
 		fboBatch.dispose();
-		tapadoShader.dispose();
+		outlineShader.dispose();
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}
