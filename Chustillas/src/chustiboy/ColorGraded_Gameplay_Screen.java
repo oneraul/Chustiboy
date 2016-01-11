@@ -9,41 +9,29 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 public class ColorGraded_Gameplay_Screen extends Gameplay_Screen {
 	
 	private Texture LUT;
-	private ShaderProgram shader;
 	
 	public ColorGraded_Gameplay_Screen(Network net) {
 		super(net);
-		
-		ShaderProgram.pedantic = false;
-		String VERTEX = Gdx.files.internal("assets/passthrough.vert").readString();
-		String FRAGMENT = Gdx.files.internal("assets/colorGrading.frag").readString();
-		shader = new ShaderProgram(VERTEX, FRAGMENT);
+
+		String passthroughVert  = Gdx.files.internal("assets/passthrough.vert").readString();
+		String colorGradingFrag = Gdx.files.internal("assets/colorGrading.frag").readString();
+		sceneShader = new ShaderProgram(passthroughVert, colorGradingFrag);
 		
 		// TODO solo para debug
-      	if(!shader.isCompiled())
-      		throw new GdxRuntimeException(shader.getLog());
-      	if(shader.getLog().length() != 0)
-      		System.out.println(shader.getLog());
+      	if(!sceneShader.isCompiled())
+      		throw new GdxRuntimeException(sceneShader.getLog());
+      	if(sceneShader.getLog().length() != 0)
+      		System.out.println(sceneShader.getLog());
 			
-		shader.begin();
-		shader.setUniformi("u_lut", 1);
-		shader.end();
-
-		fboBatch.setShader(shader);
-	}
-	
-	@Override
-	public void resize(int width, int height) {
-		super.resize(width, height);
-		shader.begin();
-		shader.end();
+      	sceneShader.begin();
+      	sceneShader.setUniformi("u_lut", 1);
+      	sceneShader.end();
 	}
 	
 	@Override
 	public void dispose() {
 		super.dispose();
 		LUT.dispose();
-		shader.dispose();
 	}
 	
 	protected void setLUT(Texture lut) {

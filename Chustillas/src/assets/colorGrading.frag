@@ -1,4 +1,8 @@
+
+// source: http://kpulv.com/359/Dev_Log__Color_Grading_Shader/
+
 varying vec2 v_texCoord0;
+varying vec4 v_color;
 
 uniform sampler2D u_sampler2D;
 uniform sampler2D u_lut;
@@ -21,6 +25,7 @@ vec4 sampleAs3DTexture(sampler2D texture, vec3 uv, float width) {
 
 void main() {
 	vec4 pixel = texture2D(u_sampler2D, v_texCoord0);
+	pixel *= v_color;
 	
 	if(pixel.a == 0.0)
 		discard;
@@ -30,4 +35,3 @@ void main() {
 	
 	gl_FragColor = gradedPixel;
 }
-

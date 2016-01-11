@@ -17,7 +17,7 @@ public class EmptyStage extends ColorGraded_Gameplay_Screen {
 
 	public EmptyStage(Network net) {
 		super(net);
-		setLUT(new Texture("assets/lut-desaturate.jpg"));
+		setLUT(new Texture("assets/lut-desaturate.png"));
 
 		int width = 500;
 		int height = 500;
@@ -46,4 +46,3 @@ public class EmptyStage extends ColorGraded_Gameplay_Screen {
 		}
 	}
 }
-

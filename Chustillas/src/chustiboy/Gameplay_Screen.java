@@ -63,6 +63,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 	protected TextureRegion fboRegion;
     protected SpriteBatch batch, fboBatch;
     private   ShaderProgram outlineShader;
+    protected ShaderProgram sceneShader;
 	private   Comparator<Dibujable> comparator;
     private   InputControllerAndroid inputControllerAndroid;
     private   Stage stage;
@@ -110,7 +111,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
       		System.out.println(outlineShader.getLog());
 			
 		outlineShader.begin();
-		outlineShader.setUniformf("u_stepSize", 5f/Assets.textures[7].getWidth(), 5f/Assets.textures[7].getHeight());
+		outlineShader.setUniformf("u_stepSize", 1f/Assets.textures[7].getWidth(), 1f/Assets.textures[7].getHeight());
 		outlineShader.end();
 		
 		// GUI -----------------------------
@@ -299,7 +300,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     	ScreenShaker.update();
 		batch.setProjectionMatrix(cam.combined);
 		
-		batch.setShader(SpriteBatch.createDefaultShader());
+		batch.setShader(sceneShader);
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
@@ -431,6 +432,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		batch.dispose();
 		fboBatch.dispose();
 		outlineShader.dispose();
+		if(sceneShader != null) sceneShader.dispose();
 		if(Gdx.app.getType() == ApplicationType.Android) {
 			inputControllerAndroid.shaper.dispose();
 		}
