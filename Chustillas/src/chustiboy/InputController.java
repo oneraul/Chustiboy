@@ -47,16 +47,19 @@ public class InputController {
 	}
 	
 	void shoot() {
-		pj.shoot();
-
-		Packet_shoot p = new Packet_shoot();
-		p.pj_id = Partida.pj_id;
-		p.pos_x = pj.getPosition().x;
-		p.pos_y = pj.getPosition().y;
-		p.dir_x = pj.dir.x;
-		p.dir_y = pj.dir.y;
-
-		net.sendTCP(p);
+		if(!pj.isDead()) {
+		
+			pj.shoot();
+	
+			Packet_shoot p = new Packet_shoot();
+			p.pj_id = Partida.pj_id;
+			p.pos_x = pj.getPosition().x;
+			p.pos_y = pj.getPosition().y;
+			p.dir_x = pj.dir.x;
+			p.dir_y = pj.dir.y;
+	
+			net.sendTCP(p);
+		}
 	}
 	
 	void menu() {
