@@ -15,27 +15,27 @@ public class ChustillaAnimationData extends AnimationData {
 	private byte state;
 	
 	public ChustillaAnimationData() {
-		int size = 24;
-		int originX = 12;
-		int originY = 7;
+		int size = 48;
+		int originX = 24;
+		int originY = 14;
 		direction = Direction.east;
 		state = State.idle;
 		
 		//dying
 		AnimationFrame[] dying = new AnimationFrame[] {
-			new AnimationFrame(192,  0, size, size, originX, originY, 0.125f),
-			new AnimationFrame(216,  0, size, size, originX, originY, 0.125f),
-			new AnimationFrame(192, 24, size, size, originX, originY, 0.125f),
-			new AnimationFrame(216, 24, size, size, originX, originY, 0.125f),
-			new AnimationFrame(192, 48, size, size, originX, originY, 0.125f),
-			new AnimationFrame(216, 48, size, size, originX, originY, 0.125f),
-			new AnimationFrame(192, 72, size, size, originX, originY, 0.175f),
-			new AnimationFrame(216, 72, size, size, originX, originY, 0.550f)
+			new AnimationFrame(size*8, size*0, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*9, size*0, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*8, size*1, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*9, size*1, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*8, size*2, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*9, size*2, size, size, originX, originY, 0.125f),
+			new AnimationFrame(size*8, size*3, size, size, originX, originY, 0.175f),
+			new AnimationFrame(size*9, size*3, size, size, originX, originY, 0.550f)
 		};
 		
 		//dead
 		AnimationFrame[] dead = new AnimationFrame[] {
-			new AnimationFrame(216, 72, size, size, originX, originY, 0)
+			new AnimationFrame(size*9, size*3, size, size, originX, originY, 0)
 		};
 		
 		stuff = new AnimationFrame[][][] {
@@ -43,17 +43,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(0, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*0, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(0, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(0, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*0, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*0, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(0, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(0, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*0, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*0, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -62,17 +62,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				// idle
 				new AnimationFrame[] {
-					new AnimationFrame(24, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*1, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(24, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(24, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*1, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*1, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(24, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(24, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*1, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*1, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -80,17 +80,17 @@ public class ChustillaAnimationData extends AnimationData {
 			//north
 			new AnimationFrame[][] {
 				new AnimationFrame[] {
-					new AnimationFrame(48, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*2, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(48, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(48, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*2, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*2, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(48, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(48, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*2, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*2, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -99,17 +99,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(72, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*3, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(72, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(72, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*3, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*3, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(72, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(72, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*3, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*3, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -118,17 +118,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(96, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*4, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(96, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(96, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*4, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*4, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(96, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(96, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*4, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*4, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -137,17 +137,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(120, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*5, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(120, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(120, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*5, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*5, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(120, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(120, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*5, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*5, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -156,17 +156,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(144, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*6, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(144, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(144, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*6, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*6, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(144, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(144, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*6, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*6, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
@@ -175,17 +175,17 @@ public class ChustillaAnimationData extends AnimationData {
 			new AnimationFrame[][] {
 				//idle
 				new AnimationFrame[] {
-					new AnimationFrame(168, 0, size, size, originX, originY, 0)
+					new AnimationFrame(size*7, size*0, size, size, originX, originY, 0)
 				},
 				//walk
 				new AnimationFrame[] {
-					new AnimationFrame(168, 24, size, size, originX, originY, 0.125f),
-					new AnimationFrame(168, 48, size, size, originX, originY, 0.125f)
+					new AnimationFrame(size*7, size*1, size, size, originX, originY, 0.125f),
+					new AnimationFrame(size*7, size*2, size, size, originX, originY, 0.125f)
 				},
 				//attack
 				new AnimationFrame[] {
-					new AnimationFrame(168, 72, size, size, originX, originY, 0.1f),
-					new AnimationFrame(168, 96, size, size, originX, originY, 0.1f)
+					new AnimationFrame(size*7, size*3, size, size, originX, originY, 0.1f),
+					new AnimationFrame(size*7, size*4, size, size, originX, originY, 0.1f)
 				},
 				dying, dead
 			},
