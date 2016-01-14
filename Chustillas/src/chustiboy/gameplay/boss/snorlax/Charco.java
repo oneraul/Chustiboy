@@ -25,7 +25,7 @@ public class Charco implements Dibujable, Poolable {
 	
 	Rectangle collider;
 	ParticleSystem particleSystem;
-	boolean drawing = false, activated;
+	boolean drawing = false, active;
 	private float a;
 	float x, y;
 	int width, height;
@@ -47,8 +47,27 @@ public class Charco implements Dibujable, Poolable {
 			.max_particles(width * 2).initial_particle_size(4f).build();
 		
 		drawing = true;
-		activated = false;
+		active = false;
 		tmpColor = new Color();
+		
+		new Thread() {
+			public void run() {
+				while(a < 1f) {
+					try {
+						Thread.sleep(40);
+					} catch(InterruptedException e) {
+						System.out.println("charco#init()");
+						e.printStackTrace();
+					}
+				
+					a += 0.02f;
+					if(a >= 1f) {
+						a = 1;
+						active = true;
+					}
+				}
+			}
+		}.start();
 	}
 	
 	@Override
@@ -83,24 +102,18 @@ public class Charco implements Dibujable, Poolable {
 	}
 	
 	public void update() {
-		if(!activated) {
-			a += 0.02f;
-			if(a >= 1f) {
-				a = 1;
-				activated = true;
-			}
-		}
-		
-		for(Chustilla chustilla : Partida.chustillas) {
-			if(collider.collide(chustilla.collider)) {
-				chustilla.hit();
+		if(active) {
+			for(Chustilla chustilla : Partida.chustillas) {
+				if(collider.collide(chustilla.collider)) {
+					chustilla.hit();
+				}
 			}
 		}
 	}
 
 	@Override
 	public void reset() {
-		activated = false;
+		active = false;
 		drawing = false;
 		a = 0;
 	}

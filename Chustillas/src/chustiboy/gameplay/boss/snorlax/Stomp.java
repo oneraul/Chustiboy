@@ -4,6 +4,7 @@ import chustiboy.Partida;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.ParticleSystem;
 import chustiboy.gameplay.Rectangle;
+import chustiboy.gameplay.ScreenShaker;
 import chustiboy.net.Network;
 import chustiboy.net.packets.Packet_pj_hit;
 
@@ -40,7 +41,20 @@ public class Stomp implements Dibujable {
 	public void init(float x, float y) {
 		collider.setPosition(x, y);
 		particleSystem.setPosition(x, y);
-		active = true;
+		
+		new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(300);
+				} catch(InterruptedException e) {
+					System.out.println("stomp#init()");
+					e.printStackTrace();
+				}
+				
+				active = true;
+				ScreenShaker.shake();
+			}
+		}.start();
 	}
 	
 	public void stop() {
@@ -48,19 +62,19 @@ public class Stomp implements Dibujable {
 		particleSystem.resetParticles();
 	}
 
-	// only called by the server
+	// TODO only called by the server
 	public void update(Network net) {
-		if(!active) return;
-		
-		for(byte pj = 0; pj < Partida.chustillas.size; pj++) {
-			Chustilla chustilla = Partida.chustillas.get(pj);
-			if(collider.collide(chustilla.collider)) {
-				chustilla.hit();
-			
-				Packet_pj_hit p = new Packet_pj_hit();
-				p.pj_id = pj;
-				net.sendTCP(p);
-	 	  	}
+		if(active) {
+			for(byte pj = 0; pj < Partida.chustillas.size; pj++) {
+				Chustilla chustilla = Partida.chustillas.get(pj);
+				if(collider.collide(chustilla.collider)) {
+					chustilla.hit();
+				
+					Packet_pj_hit p = new Packet_pj_hit();
+					p.pj_id = pj;
+					net.sendTCP(p);
+		 	  	}
+			}
 		}
 	}
 }

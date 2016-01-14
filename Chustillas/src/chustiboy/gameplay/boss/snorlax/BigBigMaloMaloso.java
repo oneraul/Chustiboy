@@ -8,7 +8,6 @@ import chustiboy.gameplay.ESPRAIT;
 import chustiboy.gameplay.Flecha;
 import chustiboy.gameplay.Pool;
 import chustiboy.gameplay.Rectangle;
-import chustiboy.gameplay.ScreenShaker;
 import chustiboy.gameplay.Dibujable;
 import chustiboy.net.Network;
 import chustiboy.net.NetworkHost;
@@ -220,7 +219,6 @@ public class BigBigMaloMaloso extends Boss {
 	public void stomp(float x, float y) {
 		if(stomp.active) return;
 		
-		ScreenShaker.shake();
 		stomp.init(x, y);
 		
 		if(ia != null) {

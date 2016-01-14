@@ -1,6 +1,7 @@
 package chustiboy.gameplay.boss.snorlax;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -17,14 +18,16 @@ public class Casita implements Dibujable {
 	
 	static int centroWidth = 300, centroHeight = 260;
 	
-	boolean active;
+	boolean active, drawing;
 	private Array<TrozoDeSuelo> suelo;
-	private float x, y, duracion, timer;
+	private float x, y, a;
 	private int width, height;
+	private final long duration = 10000;
+	private Color tmpColor;
 	
 	Casita() {
-		duracion = 10;
 		suelo = new Array<>();
+		tmpColor = new Color();
 	}
 	
 	void init(float x, float y) {
@@ -39,24 +42,67 @@ public class Casita implements Dibujable {
 			suelo.add(new TrozoDeSuelo(chustilla.getPosition().x+dstX/2, chustilla.getPosition().y, dstX, 30));
 		}
 		
-		timer = duracion;
-		active = true;
-		
-		//para la lava
+		//para que la lava se ajuste al tamaño del escenario
 		this.x =      -Partida.stage_width  * 0.12f;
 		this.y =      -Partida.stage_height * 0.075f;
 		width  = (int)(Partida.stage_width  * 1.25f);
 		height = (int)(Partida.stage_height * 1.2f);
+		
+		new Thread() {
+			public void run() {
+
+				drawing = true;
+				
+				// fade in
+				while(a < 1f) {
+
+					try {
+						Thread.sleep(40);
+					} catch(InterruptedException e) {
+						System.out.println("casita#init() ---- 0");
+						e.printStackTrace();
+					}
+				
+					a += 0.02f;
+					if(a >= 1f) {
+						a = 1;
+						active = true;
+						drawing = true;
+					}
+				}
+				
+				// wait for duration
+				try {
+					Thread.sleep(duration);
+				} catch(InterruptedException e) {
+					System.out.println("casita#init() ---- 1");
+					e.printStackTrace();
+				}
+			
+				active  = false;
+				
+				// fade out
+				while(a > 0) {
+
+					try {
+						Thread.sleep(20);
+					} catch(InterruptedException e) {
+						System.out.println("casita#init() ---- 3");
+						e.printStackTrace();
+					}
+				
+					a -= 0.05f;
+					if(a <= 0) {
+						a = 0;
+						drawing = false;
+					}
+				}
+			}
+		}.start();
 	}
 	
 	void update() {
 		if(active) {
-			timer -= Gdx.graphics.getDeltaTime();
-			if(timer <= 0) {
-				active = false;
-				return;
-			}
-			
 			for(Chustilla chustilla : Partida.chustillas) {
 				boolean safe = false;
 				for(TrozoDeSuelo s : suelo) {
@@ -74,7 +120,7 @@ public class Casita implements Dibujable {
 
 	@Override
 	public void draw(SpriteBatch batch) {
-		if(active) {
+		if(drawing) {
 			if(batch.getShader() != Charco.shaderLava) {
 				Charco.shaderDisplacement.bind(1);
 				Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
@@ -85,10 +131,16 @@ public class Casita implements Dibujable {
 				Charco.shaderLava.setUniformf("u_deltatime", Charco.shaderDeltaTime);
 			}
 				
-			batch.draw(Assets.textures[4], x, y, width, height);
-			for(TrozoDeSuelo s : suelo) {
-				s.draw(batch);
-			}
+			tmpColor.set(batch.getColor()).a = a;
+			batch.setColor(tmpColor);
+			
+				batch.draw(Assets.textures[4], x, y, width, height);
+				for(TrozoDeSuelo s : suelo) {
+					s.draw(batch);
+				}
+				
+			tmpColor.a = 1;
+			batch.setColor(tmpColor);
 			
 			if(GameOptions.debug) {
 				for(TrozoDeSuelo s : suelo) {

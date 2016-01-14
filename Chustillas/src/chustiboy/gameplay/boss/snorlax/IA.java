@@ -26,12 +26,13 @@ public class IA {
 		
 		Selector<BigBigMaloMaloso> fireballs = new Selector<>();
 		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.95f, new Task_SimpleFireball()));
-		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.5f, new Task_FireballsVertical()));
+		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.33f, new Task_FireballsVertical()));
+		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.33f, new Task_FireballsHorizontal()));
 		fireballs.addChild(new Task_FireballsCorner());
 		
 		Sequence<BigBigMaloMaloso> attack = new Sequence<>();
-		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0005f, new Task_Casita())));
-		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0035f, new Task_Tron())));
+		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0004f, new Task_Casita())));
+		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0025f, new Task_Tron())));
 		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0035f, new Task_FirePuddle())));
 		attack.addChild(new Probability<BigBigMaloMaloso>(0.015f, fireballs));
 		
@@ -191,6 +192,36 @@ class Task_FireballsVertical extends LeafTask<BigBigMaloMaloso> {
 	}
 }
 
+class Task_FireballsHorizontal extends LeafTask<BigBigMaloMaloso> {
+
+	@Override
+	public Status execute() {
+		BigBigMaloMaloso boss = getObject();
+		
+		int height = 40;
+		float y = (Partida.stage_height - height) * MathUtils.random();
+		
+		Vector2 pos = new Vector2(50, y);
+		Vector2 dir = new Vector2(1, 0);
+		
+		int separacion = 4;
+		int n = 6;
+		n = Math.min(n, boss.fireballs.pool.size);
+		
+		for(int i = 0; i < n; i++) {
+			boss.shootFireball(pos, dir);
+			pos.y += separacion;
+		}
+		
+		return Status.SUCCEEDED;
+	}
+
+	@Override
+	protected Task<BigBigMaloMaloso> copyTo(Task<BigBigMaloMaloso> task) {
+		return task;
+	}
+}
+
 class Task_FireballsCorner extends LeafTask<BigBigMaloMaloso> {
 
 	@Override
@@ -199,19 +230,19 @@ class Task_FireballsCorner extends LeafTask<BigBigMaloMaloso> {
 		
 		if(boss.fireballs.isPoolEmpty()) return Status.FAILED;
 		
-		Vector2 pos = new Vector2(10, 10);
+		Vector2 pos = new Vector2(25, 25);
 		Vector2 dir = new Vector2();
-		float angle = 0;
+		float angle = 90;
 		
 		int n = Math.min(15, boss.fireballs.pool.size);
 		float step = 90 / n;
 		
-		for(int i = n; i >= 0; i--) {
+		for(int i = 0; i < n; i++) {
 			dir.x = MathUtils.cosDeg(angle);
 			dir.y = MathUtils.sinDeg(angle);
 			
 			boss.shootFireball(pos, dir);
-			angle += step;
+			angle -= step;
 		}
 		
 		return Status.SUCCEEDED;
@@ -271,10 +302,8 @@ class Task_Casita extends LeafTask<BigBigMaloMaloso> {
 	public Status execute() {
 		BigBigMaloMaloso boss = getObject();
 		
-		int centroWidth = 300, centroHeight = 260;
-		float x = MathUtils.random(centroWidth/2, Partida.stage_width-centroWidth/2);
-		float y = MathUtils.random(0, Partida.stage_height-centroHeight);
-		
+		float x = MathUtils.random(Casita.centroWidth/2, Partida.stage_width-Casita.centroWidth/2);
+		float y = MathUtils.random(0, Partida.stage_height-Casita.centroHeight);
 		boss.startCasita(x, y);
 		
 		return Status.SUCCEEDED;
