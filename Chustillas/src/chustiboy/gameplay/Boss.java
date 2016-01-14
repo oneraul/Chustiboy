@@ -13,6 +13,7 @@ public abstract class Boss implements Dibujable {
 	private Vector2 tmpPos;
 	
 	public abstract void addDibujablesToList(Array<Dibujable> list);
+	public abstract void addDibujablesSueloToList(Array<Dibujable> list);
 	public abstract void update();
 	public abstract void die();
 	public abstract void attack();

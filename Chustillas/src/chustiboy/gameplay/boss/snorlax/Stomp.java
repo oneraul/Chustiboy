@@ -1,6 +1,5 @@
 package chustiboy.gameplay.boss.snorlax;
 
-import chustiboy.GameOptions;
 import chustiboy.Partida;
 import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.ParticleSystem;
@@ -13,7 +12,7 @@ import chustiboy.gameplay.Dibujable;
 
 public class Stomp implements Dibujable {
 
-	private ParticleSystem particleSystem;
+	ParticleSystem particleSystem;
 	Rectangle collider;
 	boolean active;
 	
@@ -21,19 +20,15 @@ public class Stomp implements Dibujable {
 		active = false;
 
 		particleSystem = new ParticleSystem.Builder(0, 0, width, 5)
-			.max_particles(150).emission_rate(15).initial_particle_size(10f).build();
+			.max_particles(300).emission_rate(25).initial_particle_size(8f).build();
 		
-		collider = new Rectangle(0, 0, width, 100);
+		collider = new Rectangle(0, 0, width, 40);
 	}
 	
 	@Override
 	public void draw(SpriteBatch batch) {
 		if(active) {
 			particleSystem.draw(batch);
-		
-			if(GameOptions.debug) {
-				collider.debug(batch);
-			}
 		}
 	}
 	

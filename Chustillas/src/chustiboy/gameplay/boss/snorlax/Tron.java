@@ -15,7 +15,7 @@ import chustiboy.gameplay.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Tron {
-	private Pool<TronPosition> posiciones;
+	Pool<TronPosition> posiciones;
 	private float timer, init_time;
 	private Vector2 nextPos;
 	private short pj;

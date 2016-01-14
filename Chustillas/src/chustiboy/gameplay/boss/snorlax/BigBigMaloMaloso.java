@@ -22,10 +22,13 @@ import chustiboy.net.packets.boss.snorlax.Packet_boss_tron;
 import chustiboy.Assets;
 import chustiboy.GameOptions;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 public class BigBigMaloMaloso extends Boss {
 	
@@ -75,17 +78,11 @@ public class BigBigMaloMaloso extends Boss {
 		// ataques
 		
 		stomp = new Stomp(size);
+		casita = new Casita();
 		
 		trons = new Tron[Partida.chustillas.size];
 		for(short i = 0; i < trons.length; i++)
 			trons[i] = new Tron(i);
-		
-		charcos = new Pool<Charco>(8, true) {
-			@Override
-			public Charco newItem() {
-				return new Charco();
-			}
-		};
 		
 		fireballs = new Pool<Fireball>(100, false) {
 			@Override
@@ -95,17 +92,38 @@ public class BigBigMaloMaloso extends Boss {
 		};
 		Fireball.fireballs = fireballs;
 		
-		casita = new Casita();
+		charcos = new Pool<Charco>(8, true) {
+			@Override
+			public Charco newItem() {
+				return new Charco();
+			}
+		};
+		
+		String vertexShader   = Gdx.files.internal("assets/passthrough.vert").readString();
+		String fragmentShader = Gdx.files.internal("assets/lava.frag").readString();
+		Charco.shaderLava = new ShaderProgram(vertexShader, fragmentShader);
+		if(!Charco.shaderLava.isCompiled())
+      		throw new GdxRuntimeException(Charco.shaderLava.getLog());
+      	if(Charco.shaderLava.getLog().length() != 0)
+      		System.out.println(Charco.shaderLava.getLog());
+      	Charco.shaderLava.begin();
+      	Charco.shaderLava.setUniformi("u_noise", 1);
+      	Charco.shaderLava.end();
+      	Charco.shaderDisplacement = Assets.textures[8];
 	}
 
+	@Override
+	public void addDibujablesSueloToList(Array<Dibujable> list) {
+		for(Charco charco : charcos.pool) list.add(charco);
+		list.add(casita);
+	}
+	
 	@Override
 	public void addDibujablesToList(Array<Dibujable> list) {
 		list.add(this);
 		list.add(stomp);
 		for(Tron tron : trons) tron.addDibujablesToList(list);
 		for(Fireball fireball : fireballs.pool) list.add(fireball);
-		for(Charco charco : charcos.pool) list.add(charco);
-		list.add(casita);
 	}
 	
 	@Override
@@ -280,5 +298,22 @@ public class BigBigMaloMaloso extends Boss {
 				net.sendTCP(p);
 			}
 		}
+	}
+	
+	public void setFireColor(Color...colors) {
+		stomp.particleSystem.colors = colors;
+		for(Charco charco : charcos.active)
+			charco.particleSystem.colors = colors;
+		for(Fireball fireball : fireballs.active)
+			fireball.particleSystem.colors = colors;
+		for(Fireball fireball : fireballs.pool)
+			fireball.particleSystem.colors = colors;
+		for(Tron tron : trons) {
+			for(TronPosition tronPosition : tron.posiciones.active)
+				tronPosition.particleSystem.colors = colors;
+			for(TronPosition tronPosition : tron.posiciones.pool)
+				tronPosition.particleSystem.colors = colors;
+		}
+			
 	}
 }
