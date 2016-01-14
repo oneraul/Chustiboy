@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.math.MathUtils;
 
+import chustiboy.gameplay.stage.StageSnorlax;
+
 public class Assets {
 
 	public static Preferences preferences;
@@ -31,10 +33,12 @@ public class Assets {
 			loadPixel(Color.GREEN),
 			new Texture("assets/boss.png"),
 			new Texture("assets/deadboss.png"),
-			sueloFuego(),
+			sueloFuego(new Color(0.9f, 0.1f, 0.1f, 1), Color.ORANGE),
 			new Texture("assets/ranger_a.png"),
 			new Texture("assets/bonus_2.png"),
-			new Texture("assets/arrow.png")
+			new Texture("assets/arrow.png"),
+			new Texture("assets/displacement.png"),
+			sueloFuego(StageSnorlax.color0, StageSnorlax.color1),
 		};
 		
 		whitePixel = textures[0];
@@ -81,15 +85,15 @@ public class Assets {
 		return t;
 	}
 	
-	private static Texture sueloFuego() {
-		short w = 150;
-		short h = 50;
+	private static Texture sueloFuego(Color color0, Color color1) {
+		short w = 512 - 30;
+		short h = 512 - 30;
 
 		Pixmap pix = new Pixmap(w, h, Pixmap.Format.RGB888);
-		pix.setColor(0.9f, 0.1f, 0.1f, 1);
+		pix.setColor(color0);
 		pix.fill();
 
-		pix.setColor(Color.ORANGE);
+		pix.setColor(color1);
 		int pixel_size = 2;
 		for(short x = 0; x < w; x += pixel_size) {
 			for(short y = 0; y < h; y += pixel_size) {
@@ -99,11 +103,13 @@ public class Assets {
 			}
 		}
 		
+		Pixmap frame = new Pixmap(512, 512, Pixmap.Format.RGBA8888);
+		frame.drawPixmap(pix, 15, 15);
 
-		Texture texture = new Texture(pix);
+		Texture texture = new Texture(frame);
 		pix.dispose();
+		frame.dispose();
 
-		texture.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 		return texture;
 	}
 	

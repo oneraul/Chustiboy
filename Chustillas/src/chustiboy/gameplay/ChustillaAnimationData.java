@@ -15,9 +15,9 @@ public class ChustillaAnimationData extends AnimationData {
 	private byte state;
 	
 	public ChustillaAnimationData() {
-		int size = 48;
-		int originX = 24;
-		int originY = 14;
+		int size = 24;
+		int originX = 12;
+		int originY = 7;
 		direction = Direction.east;
 		state = State.idle;
 		

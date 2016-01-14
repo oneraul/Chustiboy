@@ -31,7 +31,7 @@ public class Chustilla implements Dibujable {
 	private boolean dead, dying, attacking;
 	
 	private int size = 15;
-	private float scale = 0.75f;
+	private float scale = 1.5f;
 	
 	private float immunity_after_hit = 0.5f;
 	private float immunity_timer, dying_timer, attack_timer, v; //animation_timer, animation_frame_duration;
