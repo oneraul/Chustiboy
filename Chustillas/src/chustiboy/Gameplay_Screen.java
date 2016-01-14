@@ -75,7 +75,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
     protected Array<Muro> muros;
 	protected Array<Boss> bosses;
 	protected float spawn_x, spawn_y;
-	private   Array<Dibujable> dibujables;
+	private   Array<Dibujable> dibujables, dibujables_suelo;
 	
 	protected Gameplay_Screen(final Network net) {
 		this.net = net;
@@ -214,6 +214,10 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		
 		// set dibujables
+		dibujables_suelo = new Array<>();
+		for(Boss boss : bosses)
+			boss.addDibujablesSueloToList(dibujables_suelo);
+		
 		dibujables = new Array<>();
 		for(Boss boss : bosses)
 			boss.addDibujablesToList(dibujables);
@@ -304,6 +308,10 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
+			dibujables_suelo.sort(comparator);
+			for(Dibujable dibujable : dibujables_suelo)
+				dibujable.draw(batch);
+			if(batch.getShader() != sceneShader) batch.setShader(sceneShader);
 			dibujables.sort(comparator);
 			for(Dibujable dibujable : dibujables)
 				dibujable.draw(batch);
