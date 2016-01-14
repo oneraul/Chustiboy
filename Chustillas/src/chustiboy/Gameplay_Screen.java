@@ -178,7 +178,7 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		}
 		
 		InputMultiplexer multiplexer = new InputMultiplexer();
-		// TODO deber�a aparecer en el producto final?
+		// TODO deberia aparecer en el producto final?
 		multiplexer.addProcessor(new InputAdapter() {
 			@Override
 			public boolean scrolled(int amount) {
@@ -308,7 +308,6 @@ public class Gameplay_Screen extends ScreenAdapter implements EventConsumer {
 		batch.begin();
 		{
 			batch.draw(suelo, 0, 0, Partida.stage_width, Partida.stage_height);
-			dibujables_suelo.sort(comparator);
 			for(Dibujable dibujable : dibujables_suelo)
 				dibujable.draw(batch);
 			if(batch.getShader() != sceneShader) batch.setShader(sceneShader);
