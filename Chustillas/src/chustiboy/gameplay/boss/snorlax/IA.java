@@ -25,13 +25,13 @@ public class IA {
 		behaviourTree.setObject(boss);
 		
 		Selector<BigBigMaloMaloso> fireballs = new Selector<>();
-		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.95f, new Task_SimpleFireball()));
-		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.33f, new Task_FireballsVertical()));
-		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.33f, new Task_FireballsHorizontal()));
+		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.92f, new Task_SimpleFireball()));
+		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.15f, new Task_FireballsVertical()));
+		fireballs.addChild(new Probability<BigBigMaloMaloso>(0.7f, new Task_FireballsHorizontal()));
 		fireballs.addChild(new Task_FireballsCorner());
 		
 		Sequence<BigBigMaloMaloso> attack = new Sequence<>();
-		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0004f, new Task_Casita())));
+		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0005f, new Task_Casita())));
 		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0025f, new Task_Tron())));
 		attack.addChild(new AlwaysSucceed<BigBigMaloMaloso>(new Probability<BigBigMaloMaloso>(0.0035f, new Task_FirePuddle())));
 		attack.addChild(new Probability<BigBigMaloMaloso>(0.015f, fireballs));

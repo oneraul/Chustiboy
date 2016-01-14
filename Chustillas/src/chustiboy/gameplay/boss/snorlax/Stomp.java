@@ -5,8 +5,6 @@ import chustiboy.gameplay.Chustilla;
 import chustiboy.gameplay.ParticleSystem;
 import chustiboy.gameplay.Rectangle;
 import chustiboy.gameplay.ScreenShaker;
-import chustiboy.net.Network;
-import chustiboy.net.packets.Packet_pj_hit;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import chustiboy.gameplay.Dibujable;
@@ -45,7 +43,7 @@ public class Stomp implements Dibujable {
 		new Thread() {
 			public void run() {
 				try {
-					Thread.sleep(300);
+					Thread.sleep(175);
 				} catch(InterruptedException e) {
 					System.out.println("stomp#init()");
 					e.printStackTrace();
@@ -62,19 +60,12 @@ public class Stomp implements Dibujable {
 		particleSystem.resetParticles();
 	}
 
-	// TODO only called by the server
-	public void update(Network net) {
-		if(active) {
-			for(byte pj = 0; pj < Partida.chustillas.size; pj++) {
-				Chustilla chustilla = Partida.chustillas.get(pj);
-				if(collider.collide(chustilla.collider)) {
-					chustilla.hit();
-				
-					Packet_pj_hit p = new Packet_pj_hit();
-					p.pj_id = pj;
-					net.sendTCP(p);
-		 	  	}
-			}
+	public void update() {
+		for(byte pj = 0; pj < Partida.chustillas.size; pj++) {
+			Chustilla chustilla = Partida.chustillas.get(pj);
+			if(collider.collide(chustilla.collider)) {
+				chustilla.hit();
+	 	  	}
 		}
 	}
 }

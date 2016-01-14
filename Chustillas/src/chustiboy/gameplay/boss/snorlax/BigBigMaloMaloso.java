@@ -191,10 +191,10 @@ public class BigBigMaloMaloso extends Boss {
 		for(Charco charco : charcos.active) charco.update();
 		for(Tron tron : trons) tron.update();
 		casita.update();
+		stomp.update();
 		
 		if(!dead && ia != null) {
 			ia.update();
-			stomp.update(net);
 		}
 	}
 	

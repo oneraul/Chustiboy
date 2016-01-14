@@ -133,14 +133,13 @@ public class Casita implements Dibujable {
 				
 			tmpColor.set(batch.getColor()).a = a;
 			batch.setColor(tmpColor);
-			
 				batch.draw(Assets.textures[4], x, y, width, height);
-				for(TrozoDeSuelo s : suelo) {
-					s.draw(batch);
-				}
 				
 			tmpColor.a = 1;
 			batch.setColor(tmpColor);
+				for(TrozoDeSuelo s : suelo) {
+					s.draw(batch);
+				}
 			
 			if(GameOptions.debug) {
 				for(TrozoDeSuelo s : suelo) {
