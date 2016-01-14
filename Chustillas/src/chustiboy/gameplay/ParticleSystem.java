@@ -16,7 +16,7 @@ public class ParticleSystem {
 	private int width, height;
 	private float max_particle_life, initial_particle_size, final_particle_size, particle_v;
 	private int max_particles,emission_rate;
-	private Color[] colors;
+	public Color[] colors;
 	public float x, y;
 	public boolean emiting;
 	
