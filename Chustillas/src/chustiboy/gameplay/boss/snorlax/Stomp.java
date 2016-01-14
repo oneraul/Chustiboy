@@ -34,7 +34,7 @@ public class Stomp implements Dibujable {
 	
 	@Override
 	public float getDrawZ() {
-		return collider.pos.y;
+		return collider.pos.y-10;
 	}
 	
 	public void init(float x, float y) {
