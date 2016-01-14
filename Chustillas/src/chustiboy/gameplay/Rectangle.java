@@ -43,5 +43,6 @@ public class Rectangle extends Collider {
 	@Override
 	public void debug(SpriteBatch batch) {
 		batch.draw(Assets.greenPixel, pos.x-w, pos.y, w*2, h);
+		batch.draw(Assets.whitePixel, pos.x-1, pos.y-1, 2, 2);
 	}
 }
